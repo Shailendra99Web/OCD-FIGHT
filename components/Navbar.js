@@ -1,9 +1,13 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 const Navbar = ({ setDarkMode, showSun, showMoon }) => {
     const [navItemDisplay, setNavItemDisplay] = useState("hidden") // for hamburger menu during small screen devices.
+    // {`/allHistory/${lastSavedDateforAllHistory.split('-').slice(1).join('-')}`}
+
+    // To hold last save date of local storage data.
+    const [lastSavedDateforAllHistory, setLastSavedDateforAllHistory] = useState('0-0-0')
 
     const toggleDisplayClass = () => {
         if (navItemDisplay == 'hidden') {
@@ -12,6 +16,14 @@ const Navbar = ({ setDarkMode, showSun, showMoon }) => {
             setNavItemDisplay('hidden')
         }
     }
+
+    useEffect(() => {
+        const localStoLastSavedDateforAH = localStorage.getItem('lastSavedDateforAllHistory')// 0-0-0
+        if(localStoLastSavedDateforAH){
+            setLastSavedDateforAllHistory(localStoLastSavedDateforAH)
+        }
+    }, [])
+
 
     return (
         <>
@@ -51,7 +63,7 @@ const Navbar = ({ setDarkMode, showSun, showMoon }) => {
                                 <Link href="/setIntervals" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Set Intervals</Link>
                             </li>
                             <li>
-                                <Link href="/history" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">History</Link>
+                                <Link href={`/allHistory/${lastSavedDateforAllHistory.split('-').slice(1).join('-')}`} className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">History</Link>
                             </li>
                             <li>
                                 <Link href="/reset" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Reset</Link>
@@ -73,7 +85,7 @@ const Navbar = ({ setDarkMode, showSun, showMoon }) => {
 
                         </ul>
                     </div>
-                
+
                 </div>
             </nav>
         </>

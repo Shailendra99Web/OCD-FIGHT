@@ -70,6 +70,8 @@ const MainCounter = () => {
       // Handle success case
       putRequest.onsuccess = function () {
         console.log('Data successfully updated or created for:', preDate);
+        console.log(lastDate + '-' + lastMonth + '-' + lastYear);
+        localStorage.setItem('lastSavedDateforAllHistory', lastDate + '-' + lastMonth + '-' + lastYear);
       };
 
       // Handle error case
@@ -95,7 +97,8 @@ const MainCounter = () => {
   // useEffect 1 - To set 'ocdCount' , 'previousCount' & 'allPreviousCount' from localStorage OR To reset the application.
   useEffect(() => {
     // console.log('useEffect 1...');
-    localStorage.getItem('savedToIDB')?console.log('found savedToIDB'):localStorage.setItem('savedToIDB', true)
+    localStorage.getItem('savedToIDB') ? console.log('found savedToIDB') : localStorage.setItem('savedToIDB', true)
+
     let localStoLastSavedDate = localStorage.getItem('lastSavedDate')// 0-0-0
     if (localStoLastSavedDate) {
       setLastSavedDate(localStoLastSavedDate)
@@ -131,7 +134,7 @@ const MainCounter = () => {
 
         const dbVer = JSON.parse(localStorage.getItem('dbVer'))
         // const newDBVer = (lastDate[2] != currentYear)?dbVer + 1: dbVer?dbVer:1
-        const newDBVer = (!savedToIDB)?dbVer + 1: dbVer?dbVer:1
+        const newDBVer = (!savedToIDB) ? dbVer + 1 : dbVer ? dbVer : 1
 
         if (typeof window !== 'undefined') {
           const request = indexedDB.open('OCDAppDB', newDBVer);
@@ -297,7 +300,7 @@ const MainCounter = () => {
       const currentMonth = (new Date().getMonth() + 1)// To get current Month
       const currentYear = new Date().getFullYear()
 
-      setLastSavedDate(currentDate + '-' + currentMonth+ '-' + currentYear)
+      setLastSavedDate(currentDate + '-' + currentMonth + '-' + currentYear)
 
       setPreviousCount({ ...previousCount, saveToLS: false })
       setAllPreCountSaveToLS(true)
@@ -481,7 +484,7 @@ const MainCounter = () => {
             <h2 className='py-2 bg-blue-500 text-white text-lg'>Compulsions</h2>
             <div className='flex justify-center items-center space-x-8 md:space-x-4 border-y-2 border-red-500'>
               <p className='w-12 text-nowrap text-red-500'>{previousCount.preCompulsions}</p>
-              <Link href={`/history/${lastSavedDate.split('-').slice(1).join('-')}`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
+              <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
               <input name="compulsions" id="compulsions" className="p-2 m-1 w-16 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.compulsions} placeholder='Compution Count' />
@@ -496,7 +499,8 @@ const MainCounter = () => {
             <h2 className='py-2 bg-blue-500 text-white text-lg'>Ruminations</h2>
             <div className='flex justify-center items-center space-x-8 md:space-x-4 border-y-2 border-red-500'>
               <p className='w-12 text-nowrap text-red-500'>{previousCount.preRuminations1 + ' : ' + previousCount.preRuminations2}</p>
-              <Link href={`/history/${lastSavedDate.split('-').slice(1).join('-')}`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
+              <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
+              {/* <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link> */}
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
               <input name="ruminations1" id="ruminations1" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.ruminations1} placeholder='Rum1 Count' />
