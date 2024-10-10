@@ -20,7 +20,7 @@ const About = () => {
           </ol>
         </div>
         <br></br>
-        <p>Special Thanks to <Link href='https://youtube.com/@ocdhelp?si=9WEzLRviQY6nvd_j' className='hover:underline'>Miss Ali Greymond</Link>, As this application's working method is Completely Inspired by her - 'Greymond Method'.</p>
+        <p>Special Thanks to <Link href='https://youtube.com/@ocdhelp?si=9WEzLRviQY6nvd_j' className='hover:underline'>Miss Ali Greymond</Link>, As this application&lsquo;s working method is Completely Inspired by her - &lsquo;Greymond Method&lsquo;.</p>
       </div>
     </div>
   )
