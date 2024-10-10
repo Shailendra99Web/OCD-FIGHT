@@ -13,17 +13,23 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" >
-      {/* To store setInterval in Redux store */}
-      <StoreProvider>
-        <body className={`${inter.className}`}>
+      <head>
+        {/* PWA Manifest */}
+        <link rel="manifest" href="../manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        {/* Add other meta tags, like icons */}
+      </head>
+      <body className={`${inter.className}`}>
+      {/* Redux store, to store Intervals. */}
+        <StoreProvider>
           <div className="">
             {/* To store Intervals from localStorage and set theme before rendering other components */}
             <IntervalWrapper>
               {children}
             </IntervalWrapper>
           </div>
-        </body>
-      </StoreProvider>
+        </StoreProvider>
+      </body>
     </html>
   );
 }

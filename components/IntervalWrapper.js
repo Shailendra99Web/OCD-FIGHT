@@ -1,17 +1,51 @@
 'use client'
 import { replace } from '@/redux/features/allIntervals/allIntervalsSlice'
-import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { useAppDispatch } from '@/redux/hooks'
 import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import Footer from './Footer'
 
 const IntervalWrapper = ({ children }) => {
     const [isInitialized, setIsInitialized] = useState(false); // To render other components or not
-    const allIntervals = useAppSelector((state) => state.allIntervals.allIntervals)
     const dispatch = useAppDispatch()
+    const [savetoLS, setSavetoLS] = useState(false)
 
-    // for theme
+    // For theme.
     const [darkMode, setDarkMode] = useState('');
+    const [showSun, setShowSun] = useState('')
+    const [showMoon, setShowMoon] = useState('hidden')
+
+
+
+    useEffect(() => {
+        console.log('taking theme from local storage')
+        let localStoTheme = localStorage.getItem('theme')
+        if (localStoTheme) {
+            setDarkMode(localStoTheme);
+            if (localStoTheme == 'dark') {
+                setShowSun('')
+                setShowMoon('hidden')
+            } else {
+                setShowSun('hidden')
+                setShowMoon('')
+            }
+        }
+    }, [])
+
+    const toggleDarkMode = () => {
+        setSavetoLS(true)
+        setDarkMode((prev) => (prev === 'dark' ? '' : 'dark'));
+        setShowSun((prev) => (prev == '' ? 'hidden' : ''))
+        setShowMoon((prev) => (prev == '' ? 'hidden' : ''))
+    };
+
+    useEffect(()=>{
+        if(savetoLS){
+            console.log('setting theme in local storage')
+            localStorage.setItem('theme', darkMode)
+        }
+    },[darkMode])
+
 
     useEffect(() => {
         const initialize = async () => {
@@ -19,7 +53,7 @@ const IntervalWrapper = ({ children }) => {
                 let holdIntervals = JSON.parse(localStorage.getItem('allIntervals'))
                 if (holdIntervals) {
                     console.log(holdIntervals)
-                    dispatch(replace({holdIntervals, saveToLS:true}))
+                    dispatch(replace({ holdIntervals, saveToLS: true }))
                 }
                 resolve()
             });
@@ -28,19 +62,6 @@ const IntervalWrapper = ({ children }) => {
 
         initialize();
     }, []);
-
-    useEffect(() => {
-        console.log(allIntervals)
-    }, [allIntervals])
-
-    const [showSun, setShowSun] = useState('')
-    const [showMoon, setShowMoon] = useState('hidden')
-
-    const toggleDarkMode = () => {
-        setDarkMode((prev) => (prev === 'dark' ? '' : 'dark'));
-        setShowSun((prev)=>(prev==''?'hidden':''))
-        setShowMoon((prev)=>(prev==''?'hidden':''))
-    };
 
     if (!isInitialized) {
         return <div>Loading...</div>

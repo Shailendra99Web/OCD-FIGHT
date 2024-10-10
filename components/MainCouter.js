@@ -55,10 +55,30 @@ const MainCouter = () => {
           setOcdCount({ compulsions: localStoragePreCount.preCompulsions, ruminations1: localStoragePreCount.preRuminations1, ruminations2: localStoragePreCount.preRuminations2 })
           setPreviousCount({ preCompulsions: localStoragePreCount.preCompulsions, preRuminations1: localStoragePreCount.preRuminations1, preRuminations2: localStoragePreCount.preRuminations2, saveToLS: false });
         }
-        let localStorageAllPreCount = JSON.parse(localStorage.getItem('allPreviousCount'))
-        if (localStorageAllPreCount) {
-          setAllPreviousCount(localStorageAllPreCount)
+        // let localStorageAllPreCount = JSON.parse(localStorage.getItem('allPreviousCount'))
+        // if (localStorageAllPreCount) {
+        //   setAllPreviousCount(localStorageAllPreCount)
+        // }
+
+        if(typeof window !== 'undefined'){
+          const request = indexedDB.open('OCDAppDB', 1);
+        
+          request.onsuccess = function (event) {
+            const db = event.target.result;
+            const transaction = db.transaction(['countStore'], 'readonly');
+            const objectStore = transaction.objectStore('countStore');
+            const getRequest = objectStore.get('allPreviousCount');
+
+            getRequest.onsuccess = function () {
+              if(getRequest.result) {
+                const storedData = JSON.parse(getRequest.result.value);
+                setAllPreviousCount(storedData);
+                console.log('Retrieved from IndexedDB:', storedData);
+              }
+            }
+          }
         }
+
         console.log('Continue adding todays history')
       } else {
         localStorage.removeItem('previousCount')
@@ -146,9 +166,37 @@ const MainCouter = () => {
   // useEffect 3 - To store 'allPreviousCount' in localStorage on every 'allPreviousCount' state update.
   useEffect(() => {
     // console.log('useEffect 3 / saving allPreviousCount to LS useEffect...')
-    if (allPreCountSaveToLS == true) {
-      localStorage.setItem("allPreviousCount", JSON.stringify(allPreviousCount))
-      setAllPreCountSaveToLS(false)
+    // if (allPreCountSaveToLS == true) {
+    //   localStorage.setItem("allPreviousCount", JSON.stringify(allPreviousCount))
+    //   setAllPreCountSaveToLS(false)
+    // }
+
+    const saveToIndexedDB = (data) => {
+      if (typeof window !== "undefined") {
+        const request = indexedDB.open("OCDAppDB", 1);
+  
+        request.onupgradeneeded = function (event) {
+          const db = event.target.result;
+          db.createObjectStore("countStore", { keyPath: "key" });
+        };
+  
+        request.onsuccess = function (event) {
+          const db = event.target.result;
+          const transaction = db.transaction(["countStore"], "readwrite");
+          const objectStore = transaction.objectStore("countStore");
+          objectStore.put({ key: "allPreviousCount", value: JSON.stringify(data) });
+          console.log("Data saved to IndexedDB");
+        };
+  
+        request.onerror = function (event) {
+          console.error("Error opening IndexedDB", event);
+        };
+      }
+    };
+
+    if (allPreCountSaveToLS) {
+      saveToIndexedDB(allPreviousCount);
+      setAllPreCountSaveToLS(false);
     }
   }, [allPreviousCount])
 

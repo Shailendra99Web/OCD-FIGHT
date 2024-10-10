@@ -8,9 +8,28 @@ const History = () => {
 
   // To load all previous counts from local Storage.
   useEffect(() => {
-    let localStorageAllPreCountData = JSON.parse(localStorage.getItem('allPreviousCount'))
-    if (localStorageAllPreCountData) {
-      setAllPreviousCount(localStorageAllPreCountData)
+    // let localStorageAllPreCountData = JSON.parse(localStorage.getItem('allPreviousCount'))
+    // if (localStorageAllPreCountData) {
+    //   setAllPreviousCount(localStorageAllPreCountData)
+    // }
+
+    if (typeof window !== 'undefined'){
+      const request = indexedDB.open('OCDAppDB', 1);
+      
+      request.onsuccess = function (event) {
+        const db = event.target.result;
+        const transaction = db.transaction(['countStore'], 'readonly');
+        const objectStore = transaction.objectStore('countStore');
+        const getRequest = objectStore.get('allPreviousCount');
+
+        getRequest.onsuccess = function () {
+          if(getRequest.result) {
+            const storedData = JSON.parse(getRequest.result.value);
+            setAllPreviousCount(storedData);
+            console.log('Retrieved from IndexedDB:', storedData)
+          }
+        } 
+      }
     }
   }, [])
 

@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 const About = () => {
@@ -18,6 +19,8 @@ const About = () => {
             <li>Set Intervals, by which Counter and History will be organised.</li>
           </ol>
         </div>
+        <br></br>
+        <p>Special Thanks to <Link href='https://youtube.com/@ocdhelp?si=9WEzLRviQY6nvd_j' className='hover:underline'>Miss Ali Greymond</Link>, As this application's working method is Completely Inspired by her - 'Greymond Method'.</p>
       </div>
     </div>
   )

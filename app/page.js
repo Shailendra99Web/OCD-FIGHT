@@ -1,10 +1,22 @@
 'use client'
 import MainCouter from "@/components/MainCouter";
 import { useEffect } from "react";
-import { useAppDispatch, useAppSelector, useAppStore } from "@/redux/hooks"
-import { add, replace } from "@/redux/features/allIntervals/allIntervalsSlice";
 
 export default function Home() {
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered with scope: ', registration.scope);
+          })
+          .catch(error => {
+            console.error('Service Worker registration failed:', error);
+          });
+      });
+    }
+  }, []);
 
   return (
     <>
