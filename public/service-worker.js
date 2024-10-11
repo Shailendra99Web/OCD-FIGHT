@@ -5,12 +5,9 @@ const urlsToCache = [
     '/history',  // Cache history page
     '/reset',  // Cache reset page
     '/setIntervals',  // Cache set intervals page
-    '/Navbar',// Component
-    '/MainCounter',// Component
-    '/IntervalWrapper',// Component
-    '/Footer',// Component
     '/favicon.ico',  // Cache favicon
     '/manifest.json',  // Cache the PWA manifest
+    '/_next/static/css/45a561a26e29e1ae.css',
     '/styles/globals.css' //CSS
     // Add other assets like images, CSS, JS files
 ];
