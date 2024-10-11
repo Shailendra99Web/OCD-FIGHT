@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useAppSelector } from '@/redux/hooks'
 
-const MainCouter = () => {
+const MainCounter = () => {
 
   // To hold ocd count in form.
   const [ocdCount, setOcdCount] = useState({ compulsions: 0, ruminations1: 0, ruminations2: 0 })
@@ -310,4 +310,4 @@ const MainCouter = () => {
   )
 }
 
-export default MainCouter
+export default MainCounter

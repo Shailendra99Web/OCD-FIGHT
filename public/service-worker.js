@@ -1,9 +1,18 @@
 const CACHE_NAME = 'ocd-fight-cache-v1';
 const urlsToCache = [
-    '/',
-    '/manifest.json',
-    '/favicon.ico',
-    '/some-other-assets' // Add any other static assets you want to cache
+    '/',  // Cache the root path
+    '/about',  // Cache about page
+    '/history',  // Cache history page
+    '/reset',  // Cache reset page
+    '/setIntervals',  // Cache set intervals page
+    '/Navbar',// Component
+    '/MainCounter',// Component
+    '/IntervalWrapper',// Component
+    '/Footer',// Component
+    '/favicon.ico',  // Cache favicon
+    '/manifest.json',  // Cache the PWA manifest
+    '/styles/globals.css' //CSS
+    // Add other assets like images, CSS, JS files
 ];
 
 // Install the service worker and cache the necessary files

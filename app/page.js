@@ -1,5 +1,5 @@
 'use client'
-import MainCouter from "@/components/MainCouter";
+import MainCounter from "@/components/MainCounter";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
 
   return (
     <>
-      {<MainCouter />}
+      {<MainCounter />}
     </>
   );
 }
