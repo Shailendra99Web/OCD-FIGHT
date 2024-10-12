@@ -1,6 +1,7 @@
 {
     "name": "OCD FIGHT",
     "short_name": "OCD FIGHT",
+    "description": "An OCD Counting app for OCD sufferers",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
