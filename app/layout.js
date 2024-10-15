@@ -8,17 +8,19 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "OCD FIGHT",
   description: "An Easier way to Tracker your OCD",
+  generator: "Next.js",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" >
-      <head>
+      {/* <head> */}
         {/* PWA Manifest */}
-        <link rel="manifest" href="../manifest.json" />
-        <meta name="theme-color" content="#000000" />
+        {/* <link rel="manifest" href="../manifest.json" />
+        <meta name="theme-color" content="#000000" /> */}
         {/* Add other meta tags, like icons */}
-      </head>
+      {/* </head> */}
       <body className={`${inter.className}`}>
       {/* Redux store, to store Intervals. */}
         <StoreProvider>
