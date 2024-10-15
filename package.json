@@ -18,6 +18,7 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/next-pwa": "^5.6.9",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.1.3",
