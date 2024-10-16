@@ -14,35 +14,6 @@ const nextConfig = {
 export default withPWA({
     dest: "public",         // destination directory for the PWA files
     runtimeCaching: [
-        // {
-        //     urlPattern: /^https:\/\/your-api-url\.com\/.*$/,
-        //     handler: 'NetworkFirst',
-        //     options: {
-        //         cacheName: 'api-cache',
-        //         expiration: {
-        //             maxEntries: 100,
-        //             maxAgeSeconds: 86400, // 24 hours
-        //         },
-        //     },
-        // },
-        // {
-        //     urlPattern: /.*/,
-        //     handler: 'NetworkFirst',
-        //     options: {
-        //         cacheName: 'catch-all',
-        //     },
-        // },
-        // {
-        //     urlPattern: /\.(?:png|jpg|jpeg|svg|gif|woff2?|eot|ttf|otf)$/,
-        //     handler: 'CacheFirst',
-        //     options: {
-        //         cacheName: 'image-cache',
-        //         expiration: {
-        //             maxEntries: 50,
-        //             maxAgeSeconds: 7 * 24 * 60 * 60, // 1 week
-        //         },
-        //     },
-        // },
         {
             urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|css|js|woff2?|eot|ttf|otf)$/,
             handler: 'CacheFirst',
