@@ -15,12 +15,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" >
-      {/* <head> */}
-        {/* PWA Manifest */}
-        {/* <link rel="manifest" href="../manifest.json" />
-        <meta name="theme-color" content="#000000" /> */}
-        {/* Add other meta tags, like icons */}
-      {/* </head> */}
+      {/* <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+      </head> */}
       <body className={`${inter.className}`}>
       {/* Redux store, to store Intervals. */}
         <StoreProvider>

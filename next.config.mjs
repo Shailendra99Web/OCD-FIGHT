@@ -1,6 +1,7 @@
 import withPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
+
 const nextConfig = {
     reactStrictMode: false,
     swcMinify: true,            // Enable SWC minification for improved performance
@@ -48,6 +49,13 @@ export default withPWA({
             },
         }
     ],
+    fallbacks: {
+        //image: "/static/images/fallback.png",
+        document: "/offline", // if you want to fallback to a custom page rather than /_offline
+        // font: '/static/font/fallback.woff2',
+        // audio: ...,
+        // video: ...,
+    },
     disable: process.env.NODE_ENV === "development",        // disable PWA in the development environment
     register: true,         // register the PWA service worker
     skipWaiting: true,      // skip waiting for service worker activation
