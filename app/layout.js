@@ -2,7 +2,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import IntervalWrapper from "@/components/IntervalWrapper";
-import { registerServiceWorker } from "../components/registerServiceWorker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,9 +13,6 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-  if (typeof window !== "undefined") {
-    registerServiceWorker();
-  }
   return (
     <html lang="en" >
       {/* <head>
