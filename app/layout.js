@@ -17,7 +17,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   if (typeof window !== "undefined") {
-    registerServiceWorker();
+    RegisterServiceWorker();
   }
   return (
     <html lang="en" >
