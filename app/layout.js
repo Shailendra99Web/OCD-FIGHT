@@ -1,5 +1,4 @@
-// app/layout.js
-import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
+import { registerServiceWorker } from "@/components/RegisterServiceWorker";
 
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -17,7 +16,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   if (typeof window !== "undefined") {
-    RegisterServiceWorker();
+    registerServiceWorker();
   }
   return (
     <html lang="en" >
