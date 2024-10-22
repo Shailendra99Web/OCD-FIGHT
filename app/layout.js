@@ -1,3 +1,6 @@
+// app/layout.js
+import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
+
 import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
@@ -13,6 +16,9 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  if (typeof window !== "undefined") {
+    registerServiceWorker();
+  }
   return (
     <html lang="en" >
       {/* <head>
