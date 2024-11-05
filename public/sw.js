@@ -5,7 +5,7 @@ const urlsToCache = [
     '/images/ocdLogo-192x192.png',
     '/images/ocdLogo.png',
     '/about',
-    '/history',
+    // '/history',
     '/reset',
     '/setIntervals',
 ];
