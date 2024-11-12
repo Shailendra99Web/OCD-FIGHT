@@ -31,3 +31,9 @@ body {
     text-wrap: balance;
   }
 }
+
+/* Show the subnav when hovering over the parent item */
+.sidebar li:hover .subnav {
+  opacity: 1;
+  max-height: 300px;
+}

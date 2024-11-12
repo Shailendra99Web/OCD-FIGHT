@@ -103,3 +103,63 @@ if (typeof window !== "undefined") {
         console.error("Error opening IndexedDB", event);
     };
 }
+
+
+
+
+'use client'
+import React, { useEffect, useState } from 'react'
+
+const History = () => {
+
+  const [objectStores, setObjectStores] = useState([])
+  const [year, setYear] = useState()
+  const [showDrawer, setDrawer] = useState(false)
+
+  const getAllObjectStoresNew = (dbName) => {
+    return new Promise((resolve, reject) => {
+      // Open a connection to the database
+      const request = indexedDB.open(dbName);
+
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        // Get all object store names
+        const storeNames = Array.from(db.objectStoreNames);
+        db.close();
+        resolve(storeNames);
+      };
+
+      request.onerror = (event) => {
+        reject(`Failed to open database: ${event.target.error}`);
+      };
+    })
+  }
+
+  useEffect(() => {
+    getAllObjectStoresNew('OCDAppDB').then((stores) => {
+      console.log("Object Stores:", stores);
+      setObjectStores(stores)
+    }).catch((error) => {
+      console.error(error);
+    });
+  }, [])
+
+  return (
+    <div>
+
+      {/* <!-- drawer component --> */}
+      <div className='fixed top-0 left-0 bottom-0 w-2/6 bg-gray-800/95'>
+        <h1 className='text-center'>YEARS</h1>
+        {objectStores && objectStores?.map((objectStore, index) => (
+          <button key={index}>{objectStore}</button>
+        ))}
+      </div>
+
+      <div className='flex'>
+        hello
+      </div>
+    </div>
+  )
+}
+
+export default History

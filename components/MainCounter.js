@@ -18,7 +18,7 @@ const MainCounter = () => {
   const [allPreCountSaveToLS, setAllPreCountSaveToLS] = useState(false)
 
   // To hold last save date of local storage data.
-  const [lastSavedDate, setLastSavedDate] = useState('0-0')
+  const [lastSavedDate, setLastSavedDate] = useState('0-0-0')
 
   // To make save button clickable/ non-clickable.
   const [saveBtn, setSaveBtn] = useState(true)
@@ -39,17 +39,17 @@ const MainCounter = () => {
     }
   }, [])
 
-  const saveToIndexedDB = (db, storedData, lastDate, lastMonth) => {
+  const saveToIndexedDB = (db, storedData, savedToIDB, lastDate, lastMonth, lastYear) => {
     console.log(' IndexedDB function...');
 
-    const savedToIDB = JSON.parse(localStorage.getItem('savedToIDB'))
+    // const savedToIDB = JSON.parse(localStorage.getItem('savedToIDB'))
     console.log(savedToIDB)
     if (!savedToIDB) {
       console.log('savingToIndexedDB')
       const localStorageAllPreCount = JSON.parse(localStorage.getItem('allPreviousCount'))
 
-      const currentYear = new Date().getFullYear();
-      const objStore = 'Y' + currentYear
+      // const currentYear = new Date().getFullYear();
+      const objStore = 'Y' + lastYear
       console.log('year is ', objStore)
 
       // Open a readwrite transaction for 'countStore'
@@ -96,17 +96,19 @@ const MainCounter = () => {
   useEffect(() => {
     // console.log('useEffect 1...');
     localStorage.getItem('savedToIDB')?console.log('found savedToIDB'):localStorage.setItem('savedToIDB', true)
-    let localStoLastSavedDate = localStorage.getItem('lastSavedDate')
+    let localStoLastSavedDate = localStorage.getItem('lastSavedDate')// 0-0-0
     if (localStoLastSavedDate) {
       setLastSavedDate(localStoLastSavedDate)
       let lastDate = localStoLastSavedDate.split('-')
       let currentDate = new Date().getDate()// To get current Date
       let currentMonth = (new Date().getMonth() + 1)// To get current Month
+      let currentYear = new Date().getFullYear()
 
       console.log(currentDate)
       console.log(currentMonth)
+      console.log(currentYear)
 
-      if (lastDate[0] == currentDate && lastDate[1] == currentMonth) {
+      if (lastDate[0] == currentDate && lastDate[1] == currentMonth && lastDate[2] == currentYear) {
         let localStoragePreCount = JSON.parse(localStorage.getItem('previousCount'));
         if (localStoragePreCount) {
           setOcdCount({ compulsions: localStoragePreCount.preCompulsions, ruminations1: localStoragePreCount.preRuminations1, ruminations2: localStoragePreCount.preRuminations2 })
@@ -122,14 +124,21 @@ const MainCounter = () => {
         // localStorage.removeItem('previousCount')
         // localStorage.removeItem('lastSavedDate')
         console.log('Removed the allPreviousCount & lastSavedDate from localStorage')
+        const savedToIDB = JSON.parse(localStorage.getItem('savedToIDB'))
+        console.log(savedToIDB)
 
         console.log('taking data from IndexedDb...')
 
-        if (typeof window !== 'undefined') {
-          const request = indexedDB.open('OCDAppDB', 1);
+        const dbVer = JSON.parse(localStorage.getItem('dbVer'))
+        // const newDBVer = (lastDate[2] != currentYear)?dbVer + 1: dbVer?dbVer:1
+        const newDBVer = (!savedToIDB)?dbVer + 1: dbVer?dbVer:1
 
-          const currentYear = new Date().getFullYear();
-          const objStore = 'Y' + currentYear
+        if (typeof window !== 'undefined') {
+          const request = indexedDB.open('OCDAppDB', newDBVer);
+
+          localStorage.setItem('dbVer', newDBVer)
+
+          const objStore = 'Y' + lastDate[2]
           console.log('year is ', objStore)
 
           request.onupgradeneeded = function (event) {
@@ -165,18 +174,16 @@ const MainCounter = () => {
                   // setMonthHistory(storedData);
 
                   // saveToIndexedDB(storedData);
-                  saveToIndexedDB(db, storedData, lastDate[0], lastDate[1]);
+                  saveToIndexedDB(db, storedData, savedToIDB, lastDate[0], lastDate[1], lastDate[2]);
                   console.log('Retrieved from IndexedDB:', storedData);
                 } else {
                   console.log('failed to retrive IndexedDB data')
                   // setSaveToIDB(true)
-                  saveToIndexedDB(db, [], lastDate[0], lastDate[1])
+                  saveToIndexedDB(db, [], savedToIDB, lastDate[0], lastDate[1], lastDate[2])
                 }
               }
             } else {
-              console.log('Y2024 is not contain in IndexedDB data')
-              saveToIndexedDB(db, [], lastDate[0], lastDate[1])
-
+              console.log(`${objStore} is not contain in IndexedDB data`)
             }
 
           }
@@ -286,10 +293,11 @@ const MainCounter = () => {
       // console.log('upadating allPreCountsaveToLS...');
 
       // To save last date, when previous count was saved.
-      let currentDate = new Date().getDate()// To get current Date
-      let currentMonth = (new Date().getMonth() + 1)// To get current Month
+      const currentDate = new Date().getDate()// To get current Date
+      const currentMonth = (new Date().getMonth() + 1)// To get current Month
+      const currentYear = new Date().getFullYear()
 
-      setLastSavedDate(currentDate + '-' + currentMonth)
+      setLastSavedDate(currentDate + '-' + currentMonth+ '-' + currentYear)
 
       setPreviousCount({ ...previousCount, saveToLS: false })
       setAllPreCountSaveToLS(true)
@@ -473,7 +481,7 @@ const MainCounter = () => {
             <h2 className='py-2 bg-blue-500 text-white text-lg'>Compulsions</h2>
             <div className='flex justify-center items-center space-x-8 md:space-x-4 border-y-2 border-red-500'>
               <p className='w-12 text-nowrap text-red-500'>{previousCount.preCompulsions}</p>
-              <Link href={`/history/${lastSavedDate.split('-')[1]}`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
+              <Link href={`/history/${lastSavedDate.split('-').slice(1).join('-')}`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
               <input name="compulsions" id="compulsions" className="p-2 m-1 w-16 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.compulsions} placeholder='Compution Count' />
@@ -488,7 +496,7 @@ const MainCounter = () => {
             <h2 className='py-2 bg-blue-500 text-white text-lg'>Ruminations</h2>
             <div className='flex justify-center items-center space-x-8 md:space-x-4 border-y-2 border-red-500'>
               <p className='w-12 text-nowrap text-red-500'>{previousCount.preRuminations1 + ' : ' + previousCount.preRuminations2}</p>
-              <Link href={`/history/${lastSavedDate.split('-')[1]}`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
+              <Link href={`/history/${lastSavedDate.split('-').slice(1).join('-')}`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
               <input name="ruminations1" id="ruminations1" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.ruminations1} placeholder='Rum1 Count' />
