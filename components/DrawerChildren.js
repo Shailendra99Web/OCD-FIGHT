@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 
-const DrawerChildren = ({ key, objectStoreName }) => {
+const DrawerChildren = ({ objectStoreName }) => {
 
     // const [objStore, setObjStore] = useState(objectStore)
     const [allMonths, setAllMonths] = useState([])
@@ -51,12 +51,12 @@ const DrawerChildren = ({ key, objectStoreName }) => {
 
 
     return (
-        <li key={key} className='border-b-2 p-2 hover:bg-gray-600'>
+        <li className='border-b-2 p-2 hover:bg-gray-600'>
             <Link href={'#'} className=''>{objectStoreName}</Link>
 
             <ul className='subnav overflow-hidden opacity-0 max-h-0 mx-8 list-disc transition-all duration-300'>
-                {allMonths.map((month) => (
-                    <li className=''>
+                {allMonths.map((month, index) => (
+                    <li key={key}>
                         <Link href={month.slice(5)+'-'+objectStoreName.slice(1)}>{month}</Link>
                     </li>
                 ))}
