@@ -56,7 +56,7 @@ const DrawerChildren = ({ objectStoreName }) => {
 
             <ul className='subnav overflow-hidden opacity-0 max-h-0 mx-8 list-disc transition-all duration-300'>
                 {allMonths.map((month, index) => (
-                    <li key={key}>
+                    <li key={index}>
                         <Link href={month.slice(5)+'-'+objectStoreName.slice(1)}>{month}</Link>
                     </li>
                 ))}
