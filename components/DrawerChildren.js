@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 
 const DrawerChildren = ({ objectStoreName }) => {
 
-    // const [objStore, setObjStore] = useState(objectStore)
     const [allMonths, setAllMonths] = useState([])
 
     useEffect(() => {
@@ -31,7 +30,6 @@ const DrawerChildren = ({ objectStoreName }) => {
 
             transaction.oncomplete = function () {
                 console.log('Transaction completed successfully.');
-                localStorage.setItem('savedToIDB', true)
             };
 
             // Optional: Handle transaction-level errors (not just putRequest errors)
@@ -55,11 +53,17 @@ const DrawerChildren = ({ objectStoreName }) => {
             <Link href={'#'} className=''>{objectStoreName}</Link>
 
             <ul className='subnav overflow-hidden opacity-0 max-h-0 mx-8 list-disc transition-all duration-300'>
-                {allMonths.map((month, index) => (
-                    <li key={index}>
-                        <Link href={month.slice(5)+'-'+objectStoreName.slice(1)}>{month}</Link>
-                    </li>
-                ))}
+                {allMonths.map((month, index) => {
+                    if (month.slice(-1) != 't') {
+
+                        return <li key={index}>
+                            <Link href={month.slice(5) + '-' + objectStoreName.slice(1)}>{month}</Link>
+                        </li>
+                    } else {
+                        console.log(month)
+                    }
+
+                })}
             </ul>
         </li>
     )

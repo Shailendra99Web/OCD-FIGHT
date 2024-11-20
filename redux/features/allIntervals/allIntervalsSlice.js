@@ -35,6 +35,8 @@ export const allIntervalsSlice = createSlice({
       console.log(state.allIntervals)
       if (action.payload.saveToLS) {
         localStorage.setItem('allIntervals', JSON.stringify(state.allIntervals));
+        localStorage.setItem('intervalsforIDB', JSON.stringify(state.allIntervals))
+        console.log('Saved IntervalsforIDB and AllIntervals')
       }
     },
     replaceFirstInt: (state, action) => {

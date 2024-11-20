@@ -6,10 +6,34 @@ import React, { useEffect, useState } from 'react'
 const AllHistory = ({ params }) => {
 
     // To hold all previous counts
-    const [allPreviousCount, setAllPreviousCount] = useState(null)
     const [monthHistory, setMonthHistory] = useState([])
     const [month, setMonth] = useState(Number(params.var[0].split('-')[0]))
     const [year, setYear] = useState(Number(params.var[0].split('-')[1]))
+    const [intervals, setIntervals] = useState([
+        { start: "00:00", end: "07:00" },
+        { start: "07:00", end: "09:00" },
+        { start: "09:00", end: "12:00" },
+        { start: "12:00", end: "15:00" },
+        { start: "15:00", end: "19:00" },
+        { start: "19:00", end: "00:00" }
+    ])
+
+    const [updateIntervalsex, setUpdateIntervalsex] = useState({
+        //{ Int [[], []] }
+        IntOne: [[{ start: 'start' }, { till: '14-12-2028' }], ['Intervals']],//2028
+        IntTwo: [[{ start: '14-12-2028' }, { till: '14-12-2029' }], ['Intervals']],//2029
+        IntThree: [[{ start: '14-12-2029' }, { till: '14-12-2030' }], ['Intervals']],//2030
+        IntFour: [[{ start: '14-12-2030' }, { till: '14-12-2031' }], ['Intervals']]//2031
+    })
+
+    useEffect(() => {
+        // intervalsUpdate
+        const previouslyUpdatedIntervals = JSON.parse(localStorage.getItem('updatedIntervals'))
+        console.log(previouslyUpdatedIntervals)
+
+
+    }, [])
+
 
     // To load all previous counts from local Storage.
     useEffect(() => {
@@ -37,6 +61,8 @@ const AllHistory = ({ params }) => {
 
                     const getRequest = objectStore.get('Month' + month);
 
+                    const getRequestInt = objectStore.get('Month' + month + 'Int');
+
                     getRequest.onsuccess = function () {
                         if (getRequest.result) {
                             console.log('getRequest result')
@@ -45,6 +71,17 @@ const AllHistory = ({ params }) => {
                             setMonthHistory(storedData)
                         } else {
                             console.log('Failed to Retrive IndexedDB data')
+                        }
+                    }
+
+                    getRequestInt.onsuccess = function () {
+                        if (getRequestInt.result) {
+                            console.log('getRequestInt result')
+                            const storedIntData = JSON.parse(getRequestInt.result.value);
+                            console.log('Retrieved from IndexedDB:', storedIntData);
+                            setIntervals(storedIntData)
+                        } else {
+                            console.log('Failed to Retrive IndexedDB Int data')
                         }
                     }
                 } else {
@@ -139,7 +176,7 @@ const AllHistory = ({ params }) => {
 
             <div className='flex text-center justify-center items-center mb-2'>
                 <button className='rounded-lg hover:text-slate-400 dark:hover:bg-slate-300 hover:bg-slate-100'>
-                    <Link href={`/allHistory/${(month==1)?month + '-' + year : (month - 1) + '-' + year}`} className='inline-block px-4 py-2 font-bold'>&larr;</Link>
+                    <Link href={`/allHistory/${(month == 1) ? month + '-' + year : (month - 1) + '-' + year}`} className='inline-block px-4 py-2 font-bold'>&larr;</Link>
                 </button>
 
                 <button className='p-4 rounded-lg hover:text-slate-400 dark:hover:bg-slate-300 hover:bg-slate-100' onClick={toggleDrawer}>
@@ -147,7 +184,7 @@ const AllHistory = ({ params }) => {
                 </button>
 
                 <button className='rounded-lg hover:text-slate-400 dark:hover:bg-slate-300 hover:bg-slate-100'>
-                    <Link href={`/allHistory/${(month==12)?month + '-' + year : month+1 + '-' + year}`} className='inline-block px-4 py-2 font-bold '>&rarr;</Link>
+                    <Link href={`/allHistory/${(month == 12) ? month + '-' + year : month + 1 + '-' + year}`} className='inline-block px-4 py-2 font-bold '>&rarr;</Link>
                 </button>
             </div>
 
@@ -158,13 +195,18 @@ const AllHistory = ({ params }) => {
                         <tr className='text-slate-200 whitespace-nowrap'>
                             <th className='border border-slate-400 bg-slate-500 p-2'>Date</th>
                             <th className='border border-cyan-400 bg-cyan-500 p-2'>Total</th>
-                            <th className='border border-orange-400 bg-orange-500 p-2'>W-7</th>
+                            {/* <th className='border border-orange-400 bg-orange-500 p-2'>W-7</th>
                             <th className='border border-orange-400 bg-orange-500 p-2'>7-9</th>
                             <th className='border border-orange-400 bg-orange-500 p-2'>9-12</th>
                             <th className='border border-orange-400 bg-orange-500 p-2'>12-15</th>
                             <th className='border border-orange-400 bg-orange-500 p-2'>15-18</th>
                             <th className='border border-orange-400 bg-orange-500 p-2'>18-21</th>
-                            <th className='border border-orange-400 bg-orange-500 p-2'>21-M</th>
+                            <th className='border border-orange-400 bg-orange-500 p-2'>21-M</th> */}
+                            {intervals && intervals.map((interval, index) => (
+                                <th key={index} className='border border-orange-400 bg-orange-500 p-2'>
+                                    {interval.start+' - '+interval.end}
+                                </th>
+                            ))}
                         </tr>
                     </thead>
 
@@ -191,7 +233,7 @@ const AllHistory = ({ params }) => {
                                     {dayData.map((count, index) => {
                                         totalCompulsions = totalCompulsions + 2;
                                         return <>
-                                            <td className='border border-gray-300 dark:border-slate-600 p-2 text-blue-500'>{count.totalCom.toString().padStart(2, '0')}</td>
+                                            <td className='text-center border border-gray-300 dark:border-slate-600 p-2 text-blue-500'>{count.totalCom.toString().padStart(2, '0')}</td>
                                         </>
                                     })}
                                 </tr>
@@ -206,7 +248,7 @@ const AllHistory = ({ params }) => {
                                     <td className='border border-gray-300 dark:border-slate-600 p-2 text-green-500'>RUM: {totalRuminations1.toString().padStart(2, '0')}:{totalRuminations2.toString().padStart(2, '0')}</td>
                                     {dayData.map((count, index) => (
                                         <>
-                                            <td className='border border-gray-300 dark:border-slate-600 p-2 text-green-500'>{formatTime(count.totalRem1, count.totalRem2)}</td>
+                                            <td className='text-center border border-gray-300 dark:border-slate-600 p-2 text-green-500'>{formatTime(count.totalRem1, count.totalRem2)}</td>
                                         </>
                                     ))}
                                 </tr>

@@ -6,38 +6,39 @@ const History = () => {
     // To hold all previous counts
     const [allPreviousCount, setAllPreviousCount] = useState(null)
 
+    const [todayDate, setTodayDate]=useState('N/A')
+
+    const getMonthName = (monthNumber) => {
+        console.log(monthNumber)
+        // Array of month names
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+
+        // Adjust for zero-based index (0 = January, 11 = December)
+        return monthNames[monthNumber];
+    }
+
     // To load all previous counts from local Storage.
     useEffect(() => {
         let localStorageAllPreCountData = JSON.parse(localStorage.getItem('allPreviousCount'))
         if (localStorageAllPreCountData) {
             setAllPreviousCount(localStorageAllPreCountData)
         }
-
-        // if (typeof window !== 'undefined'){
-        //   const request = indexedDB.open('OCDAppDB', 1);
-
-        //   request.onsuccess = function (event) {
-        //     const db = event.target.result;
-        //     const transaction = db.transaction(['countStore'], 'readonly');
-        //     const objectStore = transaction.objectStore('countStore');
-        //     const getRequest = objectStore.get('allPreviousCount');
-
-        //     getRequest.onsuccess = function () {
-        //       if(getRequest.result) {
-        //         const storedData = JSON.parse(getRequest.result.value);
-        //         setAllPreviousCount(storedData);
-        //         console.log('Retrieved from IndexedDB:', storedData)
-        //       }
-        //     } 
-        //   }
-        // }
+        const date = String(new Date().getDate())
+        const day = String(new Date().getDay())
+        const month = getMonthName(new Date().getMonth())
+        const year = String(new Date().getFullYear())
+        console.log(date +' '+ month +', '+ year)
+        setTodayDate(date +' '+ month +', '+ year)
     }, [])
 
     return (
         <div className='m-3 min-h-[80vh]'>
 
             <h1 className='text-xl text-center p-4'>Today&apos;s History</h1>
-            {/* <p className='text-center pb-4 text-yellow-500 font-bold'>Note: All histories will be erased by 23:59 today.</p> */}
+            <p className='text-center pb-4 text-yellow-500 font-bold'>{todayDate}</p>
 
             <table className="m-auto sm:w-3/5 table-auto border-collapse border border-slate-500">
                 <thead>

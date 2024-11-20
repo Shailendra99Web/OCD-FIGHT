@@ -39,12 +39,12 @@ const IntervalWrapper = ({ children }) => {
         setShowMoon((prev) => (prev == '' ? 'hidden' : ''))
     };
 
-    useEffect(()=>{
-        if(savetoLS){
+    useEffect(() => {
+        if (savetoLS) {
             console.log('setting theme in local storage')
             localStorage.setItem('theme', darkMode)
         }
-    },[darkMode])
+    }, [darkMode])
 
 
     useEffect(() => {

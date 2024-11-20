@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector, useAppStore } from "@/redux/hooks"
 import { add, remove, replace, replaceFirstInt } from '@/redux/features/allIntervals/allIntervalsSlice'
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from "react-toastify";
 // uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
 const SetIntervals = () => {
@@ -154,15 +155,39 @@ const SetIntervals = () => {
     })
   }
 
+  const [updateIntervalsex, setUpdateIntervalsex] = useState({
+    //{ Int [[], []] }
+    IntOne: [[{ start: 'start' }, { till: '14-12-2028' }], ['Intervals']],//2028
+    IntTwo: [[{ start: '14-12-2028' }, { till: '14-12-2029' }], ['Intervals']],//2029
+    IntThree: [[{ start: '14-12-2029' }, { till: '14-12-2030' }], ['Intervals']],//2030
+    IntFour: [[{ start: '14-12-2030' }, { till: '14-12-2031' }], ['Intervals']]//2031
+  })
+
   const saveAndSoftReset = () => {
     if (confirm('Soft-Reset will erase OCD Counter & All Histories, Are you sure ?')) {
+
+      // To save last date, when previous count was saved.
+      const currentDate = new Date().getDate()// To get current Date
+      const currentMonth = (new Date().getMonth() + 1)// To get current Month
+      const currentYear = new Date().getFullYear()
+
+      const lastSavedDate = (currentDate + '-' + currentMonth + '-' + currentYear)
+
+      console.log(lastSavedDate)
+      localStorage.setItem('lastSavedDate', lastSavedDate)
+      const savedIntToIDB = localStorage.getItem('savedIntToIDB')
+      console.log(savedIntToIDB)
+      localStorage.removeItem('savedIntToIDB')
+
       dispatch(replace({ holdIntervals, saveToLS: true }))
       localStorage.removeItem('previousCount');
       localStorage.removeItem('allPreviousCount');
-      localStorage.removeItem('lastSavedDate');
+      // localStorage.removeItem('lastSavedDate');
       console.log('Removed the allPreviousCount & lastSavedDate from localStorage');
       alert('Soft Reset Successful!')
-      window.location.href = '/'; // Navigate and reload
+      toast.success('Intervals Saved Successful!');
+      // window.location.href = '/'; // Navigate and reload
+
     }
   }
 
