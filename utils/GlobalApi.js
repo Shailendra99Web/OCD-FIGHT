@@ -5,9 +5,6 @@ const removeObjectStore = (storeName) => {
     console.log('deleting key')
 
     const dbVer = JSON.parse(localStorage.getItem('dbVer'))
-    console.log(dbVer)
-    console.log(storeName)
-
     const request = indexedDB.open('OCDAppDB', dbVer + 1);
 
     request.onupgradeneeded = (event) => {
@@ -15,13 +12,13 @@ const removeObjectStore = (storeName) => {
         const db = event.target.result;
 
         // Check if the object store exists before trying to delete it
-        if (db.objectStoreNames.contains(storeName)) {
+        // if (db.objectStoreNames.contains(storeName)) {
             db.deleteObjectStore(storeName);
             console.log(`Object store "${storeName}" has been removed.`);
             toast.success(`The history of ${storeName.slice(1)} has been removed`);
-        } else {
-            console.warn(`Object store "${storeName}" does not exist in the database.`);
-        }
+        // } else {
+            // console.warn(`Object store "${storeName}" does not exist in the database.`);
+        // }
     };
 
     request.onsuccess = () => {
@@ -37,9 +34,6 @@ const removeObjKey = (objStoName, mon) => {
     console.log('deleting key')
 
     const dbVer = JSON.parse(localStorage.getItem('dbVer'))
-    console.log(dbVer)
-    console.log(objStoName)
-    console.log(mon)
 
     const request = indexedDB.open('OCDAppDB', dbVer + 1);
 
@@ -59,30 +53,17 @@ const removeObjKey = (objStoName, mon) => {
         const objectStore = transaction.objectStore(objStoName);
 
         // Delete the key
-        const getRequest = objectStore.get(mon);
+        const deleteRequest = objectStore.delete(mon);
         const intDeleteRequest = objectStore.delete(mon + 'Int');
 
-        getRequest.onsuccess = () => {
-            if (getRequest.result) {
-
-                const deleteRequest = objectStore.delete(mon);
-
-                deleteRequest.onsuccess = () => {
-                    console.log('Key successfully deleted.');
-                    toast.success(`The history of month ${mon.slice(5)} has been removed`)
-                }
-                deleteRequest.onerror = () => {
-                    console.error('Error deleting key:', event.target.error);
-                    toast.warn(`Error while deleting history of month ${mon.slice(5)}`)
-                }
-            }
-
-        };
-
-        getRequest.onerror = (event) => {
+        deleteRequest.onsuccess = () => {
+            console.log('Key successfully deleted.');
+            toast.success(`The history of month ${mon.slice(5)} has been removed`)
+        }
+        deleteRequest.onerror = () => {
             console.error('Error deleting key:', event.target.error);
             toast.warn(`Error while deleting history of month ${mon.slice(5)}`)
-        };
+        }
 
         intDeleteRequest.onsuccess = () => {
             console.log('Interval Key successfully deleted.');
@@ -96,7 +77,7 @@ const removeObjKey = (objStoName, mon) => {
     request.onerror = (event) => {
         console.error('Error opening database:', event.target.error);
     };
+};
 
-}
 
 export { removeObjectStore, removeObjKey }
