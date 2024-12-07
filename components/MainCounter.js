@@ -8,17 +8,25 @@ import { replaceLastSavedDateAllHis, replaceLoaderValue } from '@/redux/features
 
 const MainCounter = () => {
 
-  const loadingBarRef = useAppSelector((state) => state.allIntervals.loadingBarRef)
-
-
   // To hold ocd count in form.
   const [ocdCount, setOcdCount] = useState({ compulsions: 0, ruminations1: 0, ruminations2: 0 })
 
   // To hold previous count.
-  const [previousCount, setPreviousCount] = useState({ preCompulsions: 0, preRuminations1: 0, preRuminations2: 0, saveToLS: false })
+  // const [previousCount, setPreviousCount] = useState({ preCompulsions: 0, preRuminations1: 0, preRuminations2: 0, saveToLS: false })
+
+  // To hold all total count.
+  const [totalCount, setTotalCount] = useState({ totalCom: 0, totalRum1: 0, totalRum2: 0 })
 
   // To hold all previous count.
   const [allPreviousCount, setAllPreviousCount] = useState([])
+
+  // { start: "00:00", end: "07:00", totalCom: 0, totalRem1: 0, totalRem2: 0 },
+  // { start: "07:00", end: "09:00", totalCom: 0, totalRem1: 0, totalRem2: 0 },
+  // { start: "09:00", end: "12:00", totalCom: 0, totalRem1: 0, totalRem2: 0 },
+  // { start: "12:00", end: "15:00", totalCom: 0, totalRem1: 0, totalRem2: 0 },
+  // { start: "15:00", end: "18:00", totalCom: 0, totalRem1: 0, totalRem2: 0 },
+  // { start: "18:00", end: "21:00", totalCom: 0, totalRem1: 0, totalRem2: 0 },
+  // { start: "21:00", end: "00:00", totalCom: 0, totalRem1: 0, totalRem2: 0 }
 
   // Whether to save all precious counts or not in LocalStorage
   const [allPreCountSaveToLS, setAllPreCountSaveToLS] = useState(false)
@@ -32,13 +40,13 @@ const MainCounter = () => {
   // To hold Interval
   const [currentInterval, setCurrentInterval] = useState({ start: 'NA', end: 'NA' })
 
+  const allIntervals = useAppSelector((state) => state.allIntervals.allIntervals)// To get all intervals from redux store.
+
   // Refered to ocd conter element
   const CounterDivRef = useRef(null);
 
   // To dipatch Store reducers
   const dispatch = useAppDispatch()
-
-  const allIntervals = useAppSelector((state) => state.allIntervals.allIntervals)// To get all intervals from redux store.
 
   // For navigation
   const router = useRouter()
@@ -58,6 +66,9 @@ const MainCounter = () => {
   const saveToIndexedDB = (db, storedData, savedToIDB, lastDate, lastMonth, lastYear) => {
     if (!savedToIDB) {
       const localStorageAllPreCount = JSON.parse(localStorage.getItem('allPreviousCount'))
+      console.log('allPreviousCount', localStorageAllPreCount)
+      const localStorageTotalCount = JSON.parse(localStorage.getItem('totalCount'))
+      console.log('localStorageTotalCount', localStorageTotalCount)
       const savedIntToIDB = JSON.parse(localStorage.getItem('savedIntToIDB'))
 
       const objStore = 'Y' + lastYear
@@ -70,8 +81,8 @@ const MainCounter = () => {
       const preMonth = 'Month' + lastMonth
       const preMonthInterval = 'Month' + lastMonth + 'Int'
 
-      // console.log([...storedData, { [preDate]: localStorageAllPreCount }])
-      const putCountRequest = objectStore.put({ month: preMonth, value: JSON.stringify([...storedData, { [preDate]: localStorageAllPreCount }]) });
+      console.log([...storedData, { [preDate]: [localStorageTotalCount, ...localStorageAllPreCount] }])
+      const putCountRequest = objectStore.put({ month: preMonth, value: JSON.stringify([...storedData, { [preDate]: [localStorageTotalCount, ...localStorageAllPreCount] }]) });
 
       if (!savedIntToIDB) {
         const putIntervalsRequest = objectStore.put({ month: preMonthInterval, value: JSON.stringify(allIntervals) });
@@ -95,8 +106,11 @@ const MainCounter = () => {
         console.log('Count Data successfully updated or created for:', preDate);
         const lSDAllHistory = lastDate + '-' + lastMonth + '-' + lastYear
         dispatch(replaceLastSavedDateAllHis({ lSDAllHistory, saveToLS: true }))
-        localStorage.removeItem('previousCount');
+        // localStorage.removeItem('previousCount');
         localStorage.removeItem('allPreviousCount');
+        setAllPreviousCount(allIntervals.map((obj) => {
+          return { ...obj, totalCom: 0, totalRum1: 0, totalRum2: 0 }
+        }))
       };
 
       // Handle error case
@@ -120,15 +134,23 @@ const MainCounter = () => {
   }
 
   // useEffect 1 - To set 'ocdCount' , 'previousCount' & 'allPreviousCount' from localStorage OR To reset the application.
+
   useEffect(() => {
-    // console.log('useEffect 1...');
-    let localStoLastSavedDate = JSON.parse(localStorage.getItem('lastSavedDate'))// 0-0-0 //22-11-2024
+    console.log('useEffect 1... to save allPreviousCount..');
+
+    const localStorageAllPreCountcheck = JSON.parse(localStorage.getItem('allPreviousCount'))
+    console.log('previous counts check', localStorageAllPreCountcheck)
+
+    const localStoLastSavedDate = JSON.parse(localStorage.getItem('lastSavedDate'))// 0-0-0 //22-11-2024
+    console.log(localStoLastSavedDate)
 
     const LocalStoSavedToIDB = JSON.parse(localStorage.getItem('savedToIDB'))
 
     LocalStoSavedToIDB == null ? localStorage.setItem('savedToIDB', JSON.stringify(true)) : console.log('found savedToIDB')
 
     if (localStoLastSavedDate) {
+      const localStorageAllPreCountcheck2 = JSON.parse(localStorage.getItem('allPreviousCount'))
+      console.log('previous counts check 2', localStorageAllPreCountcheck2)
       setLastSavedDate(localStoLastSavedDate)
       let lastDate = localStoLastSavedDate.split('-')
       let currentDate = new Date().getDate()// To get current Date
@@ -136,11 +158,15 @@ const MainCounter = () => {
       let currentYear = new Date().getFullYear()
 
       if (lastDate[0] == currentDate && lastDate[1] == currentMonth && lastDate[2] == currentYear) {
-        let localStoragePreCount = JSON.parse(localStorage.getItem('previousCount'));
-        if (localStoragePreCount) {
-          setOcdCount({ compulsions: localStoragePreCount.preCompulsions, ruminations1: localStoragePreCount.preRuminations1, ruminations2: localStoragePreCount.preRuminations2 })
-          setPreviousCount({ preCompulsions: localStoragePreCount.preCompulsions, preRuminations1: localStoragePreCount.preRuminations1, preRuminations2: localStoragePreCount.preRuminations2, saveToLS: false });
+        const localStorageAllPreCountcheck3 = JSON.parse(localStorage.getItem('allPreviousCount'))
+        console.log('previous counts check3', localStorageAllPreCountcheck3)
+
+        let localStoTotalCount = JSON.parse(localStorage.getItem('totalCount'))
+        if (localStoTotalCount) {
+          console.log(localStoTotalCount)
+          setTotalCount(localStoTotalCount)
         }
+
         let localStorageAllPreCount = JSON.parse(localStorage.getItem('allPreviousCount'))
         if (localStorageAllPreCount) {
           setAllPreviousCount(localStorageAllPreCount)
@@ -148,13 +174,19 @@ const MainCounter = () => {
 
         console.log('Continue adding todays history')
       } else {
-        const savedToIDB = JSON.parse(localStorage.getItem('savedToIDB'))
-        console.log('Retriving data from IndexedDb...')
+        const localStorageAllPreCountcheck4 = JSON.parse(localStorage.getItem('allPreviousCount'))
+        console.log('previous counts check4', localStorageAllPreCountcheck4)
 
+        const savedToIDB = JSON.parse(localStorage.getItem('savedToIDB'))
+
+        console.log('Retriving data from IndexedDb...')
         const dbVer = JSON.parse(localStorage.getItem('dbVer'))
         const newDBVer = (!savedToIDB) ? dbVer + 1 : dbVer ? dbVer : 1
 
         if (typeof window !== 'undefined') {
+          const localStorageAllPreCountcheck5 = JSON.parse(localStorage.getItem('allPreviousCount'))
+          console.log('previous counts check5', localStorageAllPreCountcheck5)
+
           const request = indexedDB.open('OCDAppDB', newDBVer);
 
           localStorage.setItem('dbVer', JSON.stringify(newDBVer))
@@ -171,6 +203,9 @@ const MainCounter = () => {
           };
 
           request.onsuccess = function (event) {
+            const localStorageAllPreCountcheck6 = JSON.parse(localStorage.getItem('allPreviousCount'))
+            console.log('previous counts check6', localStorageAllPreCountcheck6)
+
             const db = event.target.result;
 
             if (db.objectStoreNames.contains(objStore)) {
@@ -181,10 +216,18 @@ const MainCounter = () => {
               getRequest.onsuccess = function () {
                 if (getRequest.result) {
                   const storedData = JSON.parse(getRequest.result.value);
+
+                  const localStorageAllPreCountcheck7 = JSON.parse(localStorage.getItem('allPreviousCount'))
+                  console.log('previous counts check7', localStorageAllPreCountcheck7)
+
                   saveToIndexedDB(db, storedData, savedToIDB, lastDate[0], lastDate[1], lastDate[2]);
                   console.log('Retrieved from IndexedDB:', storedData);
                 } else {
                   console.log('failed to retrive IndexedDB data')
+
+                  const localStorageAllPreCountcheck7 = JSON.parse(localStorage.getItem('allPreviousCount'))
+                  console.log('previous counts check7', localStorageAllPreCountcheck7)
+
                   saveToIndexedDB(db, [], savedToIDB, lastDate[0], lastDate[1], lastDate[2])
                 }
               }
@@ -199,9 +242,10 @@ const MainCounter = () => {
         }
 
         // localStorage.removeItem('allPreviousCount')
-        setAllPreviousCount(allIntervals.map((obj) => {
-          return { ...obj, totalCom: 0, totalRem1: 0, totalRem2: 0 }
-        }))
+
+        // setAllPreviousCount(allIntervals.map((obj) => {
+        //   return { ...obj, totalCom: 0, totalRum1: 0, totalRum2: 0 }
+        // }))
       }
     }
 
@@ -209,16 +253,104 @@ const MainCounter = () => {
     let localStorageAllPreCount = JSON.parse(localStorage.getItem('allPreviousCount'))
     if (!localStorageAllPreCount) {
       setAllPreviousCount(allIntervals.map((obj) => {
-        return { ...obj, totalCom: 0, totalRem1: 0, totalRem2: 0 }
+        return { ...obj, totalCom: 0, totalRum1: 0, totalRum2: 0 }
       }))
     }
   }, [])
 
-  // useEffect 2 - To store 'previousCount' in localStorage & update 'allPreviousCount' state on every 'previousCount' state update.
+  // useEffect 2 - To set 'currentInterval' from allIntervals, according to current time.
   useEffect(() => {
-    if (previousCount.saveToLS == true) {
-      // To store 'previousCount' in localStorage.
-      localStorage.setItem("previousCount", JSON.stringify({ preCompulsions: previousCount.preCompulsions, preRuminations1: previousCount.preRuminations1, preRuminations2: previousCount.preRuminations2 }))
+    console.log('useEffect 2 / To set current Interval...')
+    let currentTime = new Date().getHours()// To get current time
+    if (allIntervals.length) {
+      allIntervals.forEach(element => {
+        let timeStartArray = element.start.split(':') // 00:00
+        let timeEndArray = element.end.split(':')     // 07:00
+
+        if (currentTime >= timeStartArray[0] && timeEndArray[0] === "00") {
+          setCurrentInterval(element)
+        }
+        if (currentTime >= timeStartArray[0] && currentTime < timeEndArray[0]) {
+          setCurrentInterval(element)
+        }
+      });
+    }
+  }, [allIntervals])
+
+  // useEffect 3 - To retrive last saved counts according to Interval.
+  useEffect(() => {
+    if (allPreCountSaveToLS == false) {
+      console.log('useEffect 3 / retriving from allpreviousCOunt to ocdCount useEffect...')
+      console.log('allPreviousCount', allPreviousCount)
+
+      if (allPreviousCount != [] && currentInterval != { start: 'NA', end: 'NA' }) {
+        console.log('...from updating ocdCounter with CurrentInterval')
+
+        allPreviousCount.map((count) => {
+          console.log(count)
+          console.log(currentInterval)
+          console.log(count.start == currentInterval.start && count.end == currentInterval.end)
+          if (count.start == currentInterval.start && count.end == currentInterval.end) {
+            console.log('saving to ocdCount ...')
+            console.log({ compulsions: count.totalCom, ruminations1: count.totalRum1, ruminations2: count.totalRum2 })
+            setOcdCount({ compulsions: count.totalCom, ruminations1: count.totalRum1, ruminations2: count.totalRum2 })
+          }
+        })
+      }
+    }
+  }, [allPreviousCount, currentInterval])
+
+  // useEffect 4 - To remove 'intervalsforIDB' from LocalStorage when month or year changes.
+  useEffect(() => {
+    console.log('useEffect 5 / To remove intervalsforIDB from LocalStorage...')
+    let localStoLastSavedDate = JSON.parse(localStorage.getItem('lastSavedDate'))
+    console.log(localStoLastSavedDate)
+    const currentMonth = (new Date().getMonth() + 1)// To get current Month
+    const currentYear = new Date().getFullYear()
+
+    console.log('currentMonth', currentMonth)
+    console.log('currentYear', currentYear)
+
+    if ((localStoLastSavedDate?.split('-')[1] != currentMonth) || (localStoLastSavedDate?.split('-')[2] != currentYear)) {
+      console.log('removing intervalsforIDB')
+      localStorage.removeItem('intervalsforIDB')
+    }
+    // dispatch(replaceLoaderValue(100))
+  }, [])
+
+  // const calculatingTotalCount = () => {
+  //   console.log(totalCount)
+  //   let totalCompulsions = 0
+  //   let totalRuminations1 = 0
+  //   let totalRuminations2 = 0
+  //   console.log(allPreviousCount)
+
+  //   // Use for...of loop for asynchronous operations
+  //   for (const count of allPreviousCount) {
+  //     console.log(count);
+  //     totalCompulsions += +count.totalCom;  // Add values
+  //     totalRuminations1 += +count.totalRum1;
+  //     totalRuminations2 += +count.totalRum2;
+  //   }
+
+  //   console.log('totalCounting', totalCompulsions, totalRuminations1, totalRuminations2)
+
+  //   while (totalRuminations2 > 59) {
+  //     console.log('... executing while and total RUminaiton2 = ', totalRuminations2)
+  //     const remaining = totalRuminations2 - 60
+  //     totalRuminations1 += 1;
+  //     totalRuminations2 = remaining;
+  //   }
+
+  //   return { compulsions: totalCompulsions, ruminations1: totalRuminations1, ruminations2: totalRuminations2 }
+  // }
+
+  // To update 'previousCount', 'saveBtn'.
+  const save = () => {
+    dispatch(replaceLoaderValue(30))
+    const intervalsforIDBLocalSto = JSON.parse(localStorage.getItem('intervalsforIDB'))
+    if (intervalsforIDBLocalSto) {
+
       dispatch(replaceLoaderValue(50))
       // To update 'allPreviousCount' and save last date, when previous count was saved.
       const currentDate = new Date().getDate()// To get current Date
@@ -228,8 +360,7 @@ const MainCounter = () => {
       setLastSavedDate(currentDate + '-' + currentMonth + '-' + currentYear)
       localStorage.setItem('lastSavedDate', JSON.stringify(currentDate + '-' + currentMonth + '-' + currentYear))
 
-      setPreviousCount({ ...previousCount, saveToLS: false })
-      setAllPreCountSaveToLS(true)
+      // setTotalCount((pre)=>({ compulsions: pre.compulsions, ruminations1: pre.ruminations1, ruminations2: pre.ruminations2 }))
 
       // To check in which Interval we need to save in 'allPreviousCount'.
       let currentTimeHour = new Date().getHours().toString().padStart(2, '0');// To get current hour
@@ -246,7 +377,7 @@ const MainCounter = () => {
             return allPreviousCount.map((item, index) => {
               if (index === i) {
                 // Modify the object
-                return { ...item, totalCom: previousCount.preCompulsions, totalRem1: previousCount.preRuminations1, totalRem2: previousCount.preRuminations2 };
+                return { ...item, totalCom: ocdCount.compulsions, totalRum1: ocdCount.ruminations1, totalRum2: ocdCount.ruminations2 };
               }
               return item;
             });
@@ -254,69 +385,11 @@ const MainCounter = () => {
         }
         return allPreviousCount;
       }
+
       setAllPreviousCount(NewAllPreviousCount())
-    }
+      // setTotalCount(calculatingTotalCount())
+      setAllPreCountSaveToLS(true)
 
-  }, [previousCount])
-
-  // useEffect 3 - To store 'allPreviousCount' in localStorage on every 'allPreviousCount' state update.
-  useEffect(() => {
-    console.log('useEffect 3 / saving allPreviousCount to LS useEffect...')
-    if (allPreCountSaveToLS == true) {
-      localStorage.setItem("allPreviousCount", JSON.stringify(allPreviousCount))
-      localStorage.setItem('savedToIDB', JSON.stringify(false))
-      setAllPreCountSaveToLS(false)
-      dispatch(replaceLoaderValue(100))
-    }
-  }, [allPreviousCount])
-
-
-  // useEffect 4 - To set 'currentInterval' from allIntervals, according to current time.
-  useEffect(() => {
-    console.log('useEffect 4 / To set current Interval...')
-    let currentTime = new Date().getHours()// To get current time
-    if (allIntervals.length) {
-      allIntervals.forEach(element => {
-        let timeStartArray = element.start.split(':')
-        let timeEndArray = element.end.split(':')
-
-        if (currentTime >= timeStartArray[0] && timeEndArray[0] === "00") {
-          setCurrentInterval(element)
-        }
-        if (currentTime >= timeStartArray[0] && currentTime < timeEndArray[0]) {
-          setCurrentInterval(element)
-        }
-      });
-    }
-  }, [allIntervals])
-
-  // useEffect 5 - To remove 'intervalsforIDB' from LocalStorage when month or year changes.
-  useEffect(() => {
-    console.log('useEffect 5 / To remove intervalsforIDB from LocalStorage...')
-    let localStoLastSavedDate = JSON.parse(localStorage.getItem('lastSavedDate'))
-    console.log(localStoLastSavedDate)
-    const currentMonth = (new Date().getMonth() + 1)// To get current Month
-    const currentYear = new Date().getFullYear()
-
-    console.log('currentMonth', currentMonth)
-    console.log('currentYear', currentYear)
-
-    if ((localStoLastSavedDate?.split('-')[1] != currentMonth) || (localStoLastSavedDate?.split('-')[2] != currentYear)) {
-      console.log('removing intervalsforIDB')
-      localStorage.removeItem('intervalsforIDB')
-    }
-    dispatch(replaceLoaderValue(100))
-  }, [])
-
-  // To update 'previousCount', 'saveBtn'.
-  const save = () => {
-    dispatch(replaceLoaderValue(30))
-    const intervalsforIDBLocalSto = JSON.parse(localStorage.getItem('intervalsforIDB'))
-    if (intervalsforIDBLocalSto) {
-      if (ocdCount.compulsions != previousCount.preCompulsions || ocdCount.ruminations1 != previousCount.preRuminations1 || ocdCount.ruminations2 != previousCount.preRuminations2) {
-        console.log("both case")
-        setPreviousCount({ preCompulsions: ocdCount.compulsions, preRuminations1: ocdCount.ruminations1, preRuminations2: ocdCount.ruminations2, saveToLS: true })
-      }
       setSaveBtn(true)
       toast.success('Saved!');
     } else {
@@ -326,9 +399,110 @@ const MainCounter = () => {
     }
   };
 
+  useEffect(() => {
+    console.log('saving allPreviousCount to localStorage...')
+    if (allPreCountSaveToLS == true) {
+      console.log(allPreviousCount)
+      // const totalCounts = calculatingTotalCount()
+      // console.log(totalCounts)
+      // localStorage.setItem('totalCount', JSON.stringify(totalCounts))
+      localStorage.setItem('allPreviousCount', JSON.stringify(allPreviousCount))
+      localStorage.setItem('savedToIDB', JSON.stringify(false))
+    }
+    setAllPreCountSaveToLS(false)
+    dispatch(replaceLoaderValue(100))
+  }, [allPreCountSaveToLS])
+
+  useEffect(() => {
+    console.log('...form total calculating . All Previous COunts: ', allPreviousCount.length);
+    if (allPreviousCount.length) {
+      console.log('... from calculating totalCount useEffect', totalCount)
+      let totalCompulsions = 0
+      let totalRuminations1 = 0
+      let totalRuminations2 = 0
+      console.log(allPreviousCount)
+
+      // Use for...of loop for asynchronous operations
+      for (const count of allPreviousCount) {
+        console.log(count);
+        totalCompulsions += +count.totalCom;  // Add values
+        totalRuminations1 += +count.totalRum1;
+        totalRuminations2 += +count.totalRum2;
+      }
+
+      console.log('totalCounting', totalCompulsions, totalRuminations1, totalRuminations2)
+
+      while (totalRuminations2 > 59) {
+        console.log('... executing while and total RUminaiton2 = ', totalRuminations2)
+        const remaining = totalRuminations2 - 60
+        totalRuminations1 += 1;
+        totalRuminations2 = remaining;
+      }
+
+      const newTotalCount = { totalCom: totalCompulsions, totalRum1: totalRuminations1, totalRum2: totalRuminations2 }
+
+      setTotalCount(newTotalCount)
+      localStorage.setItem('totalCount', JSON.stringify(newTotalCount))
+    }
+
+  }, [allPreviousCount])
+
+
+  useEffect(() => {
+    console.log('totalCount : ' , totalCount)
+  }, [totalCount])
+
   // To handle input and update 'ocdCount' & 'saveBtn'.
-  const handleInput = (e) => {
-    setOcdCount({ ...ocdCount, [e.target.name]: +e.target.value })
+  // const handleInput = (e) => {
+
+  //   if (e.target.name == 'compulsions') {
+  //     console.log('.. from compulsions Input')
+  //     setOcdCount({ ...ocdCount, [e.target.name]: +e.target.value })
+  //   }
+
+  //   if (e.target.name == 'ruminations1') {
+  //     console.log('... from ruminations1 Input')
+  //     if (e.target.value < 0 || e.target.value > 24) {
+  //       toast.error('Hours must be between 0 and 24.')
+  //     } else {
+  //       setOcdCount({ ...ocdCount, [e.target.name]: +e.target.value })
+  //     }
+  //   }
+
+  //   if (e.target.name == 'ruminations2') {
+  //     console.log('... from ruminations2 Input')
+  //     if (e.target.value < 0 || e.target.value > 59) {
+  //       toast.error('Minutes must be between 0 and 59.')
+  //     } else {
+  //       setOcdCount({ ...ocdCount, [e.target.name]: +e.target.value })
+  //     }
+  //   }
+  //   setSaveBtn(false)
+  // };
+
+  const handleCompulsionChange = (e) => {
+    const value = Math.round(e.target.value);
+    console.log('...from handling compulsions', value)
+    setOcdCount({ ...ocdCount, [e.target.name]: value })
+    setSaveBtn(false)
+  };
+
+  const handleRumination1Change = (e) => {
+    const trimmedValue = e.target.value ? parseInt(e.target.value, 10) : 0;
+    console.log(trimmedValue)
+    if (trimmedValue <= 24) {
+      console.log(trimmedValue)
+      setOcdCount({ ...ocdCount, [e.target.name]: trimmedValue })
+    }
+    setSaveBtn(false)
+  };
+
+  const handleRumination2Change = (e) => {
+    const trimmedValue = e.target.value ? parseInt(e.target.value, 10) : 0;
+    if (trimmedValue <= 59) {
+      console.log(trimmedValue)
+      setOcdCount({ ...ocdCount, [e.target.name]: trimmedValue })
+    }
     setSaveBtn(false)
   };
 
@@ -361,11 +535,11 @@ const MainCounter = () => {
           <div className='pb-4 w-full grid sm:grid-cols-3 gap-3 border-4 border-blue-500 rounded'>
             <h2 className='py-2 bg-blue-500 text-white text-lg'>Compulsions</h2>
             <div className='flex justify-center items-center space-x-8 md:space-x-4 border-y-2 border-red-500'>
-              <p className='w-12 text-nowrap text-red-500'>{previousCount.preCompulsions}</p>
+              <p className='w-12 text-nowrap text-red-500'>{totalCount.totalCom}</p>
               <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50' onClick={() => { dispatch(replaceLoaderValue(40)) }}>History</Link>
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
-              <input name="compulsions" id="compulsions" className="p-2 m-1 w-16 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.compulsions} placeholder='Compution Count' />
+              <input name="compulsions" id="compulsions" className="p-2 m-1 w-16 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleCompulsionChange} value={ocdCount.compulsions} placeholder='Compution Count' />
             </div>
             <div className=''>
               <button className='my-1 mx-1 py-3 px-4 hover:bg-blue-500 border-2 border-blue-500 rounded-full hover:text-slate-50' onClick={() => { handleCompulsionsClick(1) }}>01</button>
@@ -376,13 +550,13 @@ const MainCounter = () => {
           <div className='pb-4 w-full grid sm:grid-cols-3 gap-3 border-4 border-blue-500 rounded'>
             <h2 className='py-2 bg-blue-500 text-white text-lg'>Ruminations</h2>
             <div className='flex justify-center items-center space-x-8 md:space-x-4 border-y-2 border-red-500'>
-              <p className='w-12 text-nowrap text-red-500'>{previousCount.preRuminations1 + ' : ' + previousCount.preRuminations2}</p>
+              <p className='w-12 text-nowrap text-red-500'>{totalCount.totalRum1 + ' : ' + totalCount.totalRum2}</p>
               <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50' onClick={() => { dispatch(replaceLoaderValue(40)) }}>History</Link>
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
-              <input name="ruminations1" id="ruminations1" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.ruminations1} placeholder='Rum1 Count' />
+              <input name="ruminations1" id="ruminations1" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleRumination1Change} value={ocdCount.ruminations1} placeholder='00' min="00" max="24" />
               <span> : </span>
-              <input name="ruminations2" id="ruminations2" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.ruminations2} placeholder='Rum2 Count' />
+              <input name="ruminations2" id="ruminations2" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleRumination2Change} value={ocdCount.ruminations2} placeholder='00' min="00" max="59" />
             </div>
             <div className=''>
               <button className='my-1 mx-1 py-3 px-4 hover:bg-blue-500 border-2 border-blue-500 rounded-full hover:text-slate-50' onClick={() => { handleRuminationsClick(1) }}>01</button>

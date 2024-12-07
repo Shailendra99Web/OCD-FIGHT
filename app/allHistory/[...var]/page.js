@@ -202,26 +202,26 @@ const AllHistory = ({ params }) => {
                             return <>
                                 <tr>
                                     <td rowSpan='2' className='border border-gray-300 dark:border-slate-600 p-2 dark:text-slate-300 text-slate-500 text-center'>{dayKey.slice(1).toString().padStart(2, '0')}</td>
-                                    {dayData.map((count, index) => {
+                                    {/* {dayData.map((count, index) => {
                                         totalCompulsions = totalCompulsions + Number(count.totalCom)
-                                    })}
-                                    <td className='border border-gray-300 dark:border-slate-600 p-2 text-blue-500'>COM: {totalCompulsions}</td>
+                                    })} */}
+                                    {/* <td className='border border-gray-300 dark:border-slate-600 p-2 text-blue-500'>COM: {totalCompulsions}</td> */}
                                     {dayData.map((count, index) => {
-                                        totalCompulsions = totalCompulsions + 2;
+                                        // totalCompulsions = totalCompulsions + 2;
                                         return <>
                                             <td className='text-center border border-gray-300 dark:border-slate-600 p-2 text-blue-500'>{count.totalCom.toString().padStart(2, '0')}</td>
                                         </>
                                     })}
                                 </tr>
                                 <tr>
-                                    {dayData.map((count, index) => {
-                                        totalRuminations1 = totalRuminations1 + Number(count.totalRem1)
-                                        totalRuminations2 = totalRuminations2 + Number(count.totalRem2)
-                                    })}
-                                    <td className='border border-gray-300 dark:border-slate-600 p-2 text-green-500'>RUM: {totalRuminations1.toString().padStart(2, '0')}:{totalRuminations2.toString().padStart(2, '0')}</td>
+                                    {/* {dayData.map((count, index) => {
+                                        totalRuminations1 = totalRuminations1 + Number(count.totalRum1)
+                                        totalRuminations2 = totalRuminations2 + Number(count.totalRum2)
+                                    })} */}
+                                    {/* <td className='border border-gray-300 dark:border-slate-600 p-2 text-green-500'>RUM: {totalRuminations1.toString().padStart(2, '0')}:{totalRuminations2.toString().padStart(2, '0')}</td> */}
                                     {dayData.map((count, index) => (
                                         <>
-                                            <td className='text-center border border-gray-300 dark:border-slate-600 p-2 text-green-500'>{formatTime(count.totalRem1, count.totalRem2)}</td>
+                                            <td className='text-center border border-gray-300 dark:border-slate-600 p-2 text-green-500'>{formatTime(count.totalRum1, count.totalRum2)}</td>
                                         </>
                                     ))}
                                 </tr>

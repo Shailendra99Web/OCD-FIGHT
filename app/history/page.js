@@ -10,7 +10,10 @@ const History = () => {
     // To hold all previous counts
     const [allPreviousCount, setAllPreviousCount] = useState(null)
 
-    const [todayDate, setTodayDate]=useState('N/A')
+    // To hold all total count.
+    const [totalCount, setTotalCount] = useState({ compulsions: 0, ruminations1: 0, ruminations2: 0 })
+
+    const [todayDate, setTodayDate] = useState('N/A')
 
     // To convert month number to month name.
     const getMonthName = (monthNumber) => {
@@ -32,10 +35,17 @@ const History = () => {
         if (localStorageAllPreCountData) {
             setAllPreviousCount(localStorageAllPreCountData)
         }
+
+        let localStoTotalCount = JSON.parse(localStorage.getItem('totalCount'))
+        if (localStoTotalCount) {
+            console.log(localStoTotalCount)
+            setTotalCount(localStoTotalCount)
+        }
+
         const date = String(new Date().getDate())
         const month = getMonthName(new Date().getMonth())
         const year = String(new Date().getFullYear())
-        setTodayDate(date +' '+ month +', '+ year)
+        setTodayDate(date + ' ' + month + ', ' + year)
         dispatch(replaceLoaderValue(100))
     }, [])
 
@@ -61,17 +71,23 @@ const History = () => {
                             <td className='border border-slate-300 dark:border-slate-600 p-2 text-green-500 text-center'>{index + 1}</td>
                             <td className='border border-slate-300 dark:border-slate-600 p-2 text-orange-500 text-center'>{ocd.start} - {ocd.end}</td>
                             <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{ocd.totalCom.toString().padStart(2, '0')}</td>
-                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{ocd.totalRem1.toString().padStart(2, '0')} : {ocd.totalRem2.toString().padStart(2, '0')}</td>
+                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{ocd.totalRum1.toString().padStart(2, '0')} : {ocd.totalRum2.toString().padStart(2, '0')}</td>
                         </tr>
                     )) :
                         <tr>
                             <td colSpan="4" className='text-center p-4 dark:text-slate-100 text-black'>No history available</td>
                         </tr>
                     }
+                    {allPreviousCount && allPreviousCount.length > 0 ? <tr>
+                        <td className='border border-slate-300 dark:border-slate-600 p-2 text-green-500 text-center' colSpan={2}>Total</td>
+                        {/* <td className='border border-slate-300 dark:border-slate-600 p-2 text-orange-500 text-center'>00</td> */}
+                        <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{totalCount.compulsions.toString().padStart(2, '0')}</td>
+                        <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{totalCount.ruminations1.toString().padStart(2, '0')} : {totalCount.ruminations2.toString().padStart(2, '0')}</td>
+                    </tr>:""}
                 </tbody>
             </table>
 
-        </div>
+        </div >
     )
 }
 
