@@ -279,7 +279,7 @@ const MainCounter = () => {
         // time = 09:25
         if (time >= start && time < end) {
           console.log('今の時間', time)
-          console.log('期間は見つけた', start + ':' + end)
+          console.log('期間は見つけた ', start + ':' + end)
           setCurrentInterval({ start: start, end: end })
         }
       }
