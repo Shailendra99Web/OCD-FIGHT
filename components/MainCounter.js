@@ -161,7 +161,7 @@ const MainCounter = () => {
         if (localStorageAllPreCount) {
           setAllPreviousCount(localStorageAllPreCount)
         }
-        // console.log('Continue adding with todays history')
+        console.log('Continue adding with todays history')
       } else {
 
         console.log('Retriving previous saved data from IndexedDb...')
@@ -238,27 +238,54 @@ const MainCounter = () => {
     }
   }, [])
 
+  // 7:30 の時七時を表しています
+
   // useEffect 2 - To set 'currentInterval' from allIntervals, according to current time.
   useEffect(() => {
-    let currentTime = new Date().getHours(); // Get the current hour of the day (0-23)
+    console.log('setting currentInterval....')
+    console.log(allIntervals)
+    // console.log(currentTime)
+    // let currentTime = (new Date().getHours().toString()).padStart(2, '0'); // Get the current hour of the day (0-23)
 
     if (allIntervals.length) {
-      allIntervals.forEach(element => {
+      // allIntervals.forEach(element => {
 
-        let timeStartArray = element.start.split(':') // 00:00 => [00, 00]
-        let timeEndArray = element.end.split(':')     // 07:00 => [07, 00]
+      //   let timeStartArray = element.start.split(':') // 00:00 => [00, 00]
+      //   let timeEndArray = element.end.split(':')     // 07:00 => [07, 00]
 
-        // If the interval ends at midnight (00:00), e.g., 12:00 - 00:00
-        if (currentTime >= timeStartArray[0] && timeEndArray[0] === "00") {
-          setCurrentInterval(element);
+      //   // If the interval ends at midnight (00:00), e.g., 12:00 - 00:00
+      //   if (currentTime >= timeStartArray[0] && timeEndArray[0] === "00") {
+      //     setCurrentInterval(element);
+      //   }
+
+      //   // If the interval ends at any hour other than midnight (e.g., 12:00 - 18:00)
+      //   if (currentTime >= timeStartArray[0] && currentTime < timeEndArray[0]) {
+      //     setCurrentInterval(element)
+      //   }
+      // });
+
+      const timeHour = (new Date().getHours().toString()).padStart(2, '0')
+      const timeMinutes = (new Date().getMinutes().toString()).padStart(2, '0')
+      const time = timeHour + ':' + timeMinutes
+      console.log(time)
+
+      for (let i = 0; i < allIntervals.length; i++) {
+        console.log('今の期間は新しい関数で')
+        let start = allIntervals[i].start // 00:00
+        let end = allIntervals[i].end //07:30 //24:30
+        let endSplit = end.split(':') // eg., 07:30 => [07, 30]
+        endSplit[0] == '00' ? end = `24:${endSplit[1]}` : end // If the ending hour of Interval is 00, then convert it to 24. [00=>24].
+
+        // time = 09:25
+        if (time >= start && time < end) {
+          console.log('今の時間', time)
+          console.log('期間は見つけた', start + ':' + end)
+          setCurrentInterval({ start: start, end: end })
         }
+      }
 
-        // If the interval ends at any hour other than midnight (e.g., 12:00 - 18:00)
-        if (currentTime >= timeStartArray[0] && currentTime < timeEndArray[0]) {
-          setCurrentInterval(element)
-        }
-      });
     }
+
   }, [allIntervals])
 
   // useEffect 3 - To retrive last saved counts according to Current Interval.
@@ -374,7 +401,7 @@ const MainCounter = () => {
       // Use for...of loop for asynchronous operations.
       for (const count of allPreviousCount) {
         // Increment values based on allPreviousCount.
-        totalCompulsions += +count.totalCom; 
+        totalCompulsions += +count.totalCom;
         totalRuminations1 += +count.totalRum1;
         totalRuminations2 += +count.totalRum2;
       }
