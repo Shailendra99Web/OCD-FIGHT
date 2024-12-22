@@ -125,7 +125,7 @@ const MainCounter = () => {
   // useEffect 1 - To set 'ocdCount' , 'previousCount' & 'allPreviousCount' from localStorage OR To reset the application.
   useEffect(() => {
     // console.log('useEffect 1...');
-    let localStoLastSavedDate = localStorage.getItem('lastSavedDate')// 0-0-0
+    let localStoLastSavedDate = localStorage.getItem('lastSavedDate')// 0-0-0 //22-11-2024
     localStorage.getItem('savedToIDB') ? console.log('found savedToIDB') : localStorage.setItem('savedToIDB', true)
 
     if (localStoLastSavedDate) {

@@ -191,9 +191,22 @@ const SetIntervals = () => {
     }
   }
 
+  const resetToDefault = () => {
+    setFirstInterval({ ...firstInterval, end: "07:00" })
+    setHoldIntervals([
+      { start: "00:00", end: "07:00" },
+      { start: "07:00", end: "09:00" },
+      { start: "09:00", end: "12:00" },
+      { start: "12:00", end: "15:00" },
+      { start: "15:00", end: "18:00" },
+      { start: "18:00", end: "21:00" },
+      { start: "21:00", end: "00:00" }
+    ])
+  }
+
   return (
     <>
-      <div className='my-4 flex flex-col items-center space-y-4 min-h-[80vh]'>
+      <div className='my-4 relative flex flex-col items-center space-y-4 min-h-[80vh]'>
 
         <h1 className='text-xl'>Set Intervals</h1>
         <p className='text-center pb-4 px-4 text-yellow-500 font-bold'>Note: Whenever you edit the Intervals, Soft Reset will be needed to start with new Intervals.</p>
@@ -274,6 +287,9 @@ const SetIntervals = () => {
             }
           })}
         </div>
+
+        <button type="button" onClick={resetToDefault} className="absolute top-0 right-0 focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 my-[0!important] me-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900">Reset</button>
+
 
         <button type="button" onClick={saveAndSoftReset} className="focus:outline-none text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900">Save & Soft-Reset</button>
       </div>

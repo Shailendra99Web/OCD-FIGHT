@@ -9,6 +9,7 @@ const AllHistory = ({ params }) => {
     const [monthHistory, setMonthHistory] = useState([])
     const [month, setMonth] = useState(Number(params.var[0].split('-')[0]))
     const [year, setYear] = useState(Number(params.var[0].split('-')[1]))
+
     const [intervals, setIntervals] = useState([
         { start: "00:00", end: "07:00" },
         { start: "07:00", end: "09:00" },
@@ -30,26 +31,28 @@ const AllHistory = ({ params }) => {
         // intervalsUpdate
         const previouslyUpdatedIntervals = JSON.parse(localStorage.getItem('updatedIntervals'))
         console.log(previouslyUpdatedIntervals)
-
-
     }, [])
 
-
-    // To load all previous counts from local Storage.
-    useEffect(() => {
-
+    // Loading History and, all Years for DrawerChildren
+    const loadingHistory = () => {
+        console.log('loading history')
         const dbVer = JSON.parse(localStorage.getItem('dbVer'))
         console.log(dbVer)
         console.log(params)
         console.log(month, year)
 
         if (typeof window !== 'undefined') {
-            console.log('form getting history')
+            console.log('form getting history');
             const request = indexedDB.open('OCDAppDB', dbVer ? dbVer : 1);
 
             request.onsuccess = function (event) {
-                console.log('request.onsuccess')
+                console.log('request.onsuccess');
                 const db = event.target.result;
+
+                //Taking all ObjectStore
+                const storeNames = Array.from(db.objectStoreNames);
+                console.log("Object Stores:", storeNames);
+                setObjectStores(storeNames)
 
                 const objStore = 'Y' + year
                 console.log('year is ', objStore)
@@ -70,7 +73,7 @@ const AllHistory = ({ params }) => {
                             console.log('Retrieved from IndexedDB:', storedData);
                             setMonthHistory(storedData)
                         } else {
-                            console.log('Failed to Retrive IndexedDB data')
+                            console.log('Failed to Retrive IndexedDB data of' + month)
                         }
                     }
 
@@ -81,16 +84,34 @@ const AllHistory = ({ params }) => {
                             console.log('Retrieved from IndexedDB:', storedIntData);
                             setIntervals(storedIntData)
                         } else {
-                            console.log('Failed to Retrive IndexedDB Int data')
+                            console.log('Failed to Retrive IndexedDB Int data of' + month)
                         }
                     }
+
+                    getRequest.onerror = (event) => {
+                        console.error('Error opening IndexedDB:' + objStore + '-' + month, event.target.error);
+                    }
+
+                    getRequestInt.onerror = (event) => {
+                        console.error('Error opening IndexedDB:' + objStore + '-' + month, event.target.error);
+                    }
                 } else {
-                    console.log(`Failed, ${objStore} is not contain in IndexedDB data`)
+                    console.log(`Failed, ${objStore} is not contain in IndexedDB data`);
 
                 }
 
             }
+
+            request.onerror = (event) => {
+                console.log('failed to open IndexedDB');
+                console.error('Error opening IndexedDB:', event.target.error);
+
+            }
         }
+    }
+
+    useEffect(() => {
+        loadingHistory()
     }, [])
 
     useEffect(() => {
@@ -125,37 +146,20 @@ const AllHistory = ({ params }) => {
     const [objectStores, setObjectStores] = useState([])
     const [showDrawer, setShowDrawer] = useState('w-0')
 
-    const getAllObjectStoresNew = (dbName) => {
-        return new Promise((resolve, reject) => {
-            // Open a connection to the database
-            const request = indexedDB.open(dbName);
-
-            request.onsuccess = (event) => {
-                const db = event.target.result;
-                // Get all object store names
-                const storeNames = Array.from(db.objectStoreNames);
-                db.close();
-                resolve(storeNames);
-            };
-
-            request.onerror = (event) => {
-                reject(`Failed to open database: ${event.target.error}`);
-            };
-        })
-    }
-
-    useEffect(() => {
-        getAllObjectStoresNew('OCDAppDB').then((stores) => {
-            console.log("Object Stores:", stores);
-            setObjectStores(stores)
-        }).catch((error) => {
-            console.error(error);
-        });
-    }, [])
-
     const toggleDrawer = () => {
         console.log('toggling Drawer display pro.');
         (showDrawer == 'w-0') ? setShowDrawer('w-full md:w-1/3') : setShowDrawer('w-0')
+    }
+
+    const cleanOpenedHistory = (delYear, delMonth) => {
+        console.log('Triggered cleanOpenedHistory')
+
+        console.log('opened', month+'-'+year)
+        console.log('del', delMonth+'-'+delYear)
+        if (delYear == year && delMonth == month) {
+            console.log('Match found in cleanOpenedHistory')
+            setMonthHistory([])
+        }
     }
 
     return (
@@ -168,7 +172,7 @@ const AllHistory = ({ params }) => {
                     <h1 className='text-center pb-3'>YEARS</h1>
                     <ul>
                         {objectStores && objectStores?.map((objectStore, index) => (
-                            <DrawerChildren key={index} objectStoreName={objectStore}></DrawerChildren>
+                            <DrawerChildren key={index} objectStoreName={objectStore} cleanOpenedHistory={cleanOpenedHistory}></DrawerChildren>
                         ))}
                     </ul>
                 </div>
@@ -195,16 +199,9 @@ const AllHistory = ({ params }) => {
                         <tr className='text-slate-200 whitespace-nowrap'>
                             <th className='border border-slate-400 bg-slate-500 p-2'>Date</th>
                             <th className='border border-cyan-400 bg-cyan-500 p-2'>Total</th>
-                            {/* <th className='border border-orange-400 bg-orange-500 p-2'>W-7</th>
-                            <th className='border border-orange-400 bg-orange-500 p-2'>7-9</th>
-                            <th className='border border-orange-400 bg-orange-500 p-2'>9-12</th>
-                            <th className='border border-orange-400 bg-orange-500 p-2'>12-15</th>
-                            <th className='border border-orange-400 bg-orange-500 p-2'>15-18</th>
-                            <th className='border border-orange-400 bg-orange-500 p-2'>18-21</th>
-                            <th className='border border-orange-400 bg-orange-500 p-2'>21-M</th> */}
                             {intervals && intervals.map((interval, index) => (
                                 <th key={index} className='border border-orange-400 bg-orange-500 p-2'>
-                                    {interval.start+' - '+interval.end}
+                                    {interval.start + ' - ' + interval.end}
                                 </th>
                             ))}
                         </tr>
