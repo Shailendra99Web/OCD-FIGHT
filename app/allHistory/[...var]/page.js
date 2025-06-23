@@ -19,14 +19,6 @@ const AllHistory = ({ params }) => {
         { start: "19:00", end: "00:00" }
     ])
 
-    const [updateIntervalsex, setUpdateIntervalsex] = useState({
-        //{ Int [[], []] }
-        IntOne: [[{ start: 'start' }, { till: '14-12-2028' }], ['Intervals']],//2028
-        IntTwo: [[{ start: '14-12-2028' }, { till: '14-12-2029' }], ['Intervals']],//2029
-        IntThree: [[{ start: '14-12-2029' }, { till: '14-12-2030' }], ['Intervals']],//2030
-        IntFour: [[{ start: '14-12-2030' }, { till: '14-12-2031' }], ['Intervals']]//2031
-    })
-
     useEffect(() => {
         // intervalsUpdate
         const previouslyUpdatedIntervals = JSON.parse(localStorage.getItem('updatedIntervals'))

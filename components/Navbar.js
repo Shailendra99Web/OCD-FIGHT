@@ -1,13 +1,16 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useAppSelector } from '@/redux/hooks'
 
 const Navbar = ({ setDarkMode, showSun, showMoon }) => {
+
+    const lastSavedDateforAllHistory = useAppSelector((state) => state.allIntervals.lastSavedDateforAllHistory)// To get allHistory LastSavedDate from redux store.
+
     const [navItemDisplay, setNavItemDisplay] = useState("hidden") // for hamburger menu during small screen devices.
     // {`/allHistory/${lastSavedDateforAllHistory.split('-').slice(1).join('-')}`}
 
     // To hold last save date of local storage data.
-    const [lastSavedDateforAllHistory, setLastSavedDateforAllHistory] = useState('0-0-0')
 
     const toggleDisplayClass = () => {
         if (navItemDisplay == 'hidden') {
@@ -17,12 +20,13 @@ const Navbar = ({ setDarkMode, showSun, showMoon }) => {
         }
     }
 
-    useEffect(() => {
-        const localStoLastSavedDateforAH = localStorage.getItem('lastSavedDateforAllHistory')// 0-0-0
-        if(localStoLastSavedDateforAH){
-            setLastSavedDateforAllHistory(localStoLastSavedDateforAH)
-        }
-    }, [])
+    // useEffect(() => {
+    //     const localStoLastSavedDateforAH = localStorage.getItem('lastSavedDateforAllHistory')// 0-0-0
+
+    //     if(localStoLastSavedDateforAH){
+    //         setLastSavedDateforAllHistory(localStoLastSavedDateforAH)
+    //     }
+    // }, [])
 
 
     return (

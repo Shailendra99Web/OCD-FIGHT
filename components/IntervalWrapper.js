@@ -19,7 +19,7 @@ const IntervalWrapper = ({ children }) => {
 
     useEffect(() => {
         console.log('taking theme from local storage')
-        let localStoTheme = localStorage.getItem('theme')
+        let localStoTheme = JSON.parse(localStorage.getItem('theme'))
         if (localStoTheme) {
             setDarkMode(localStoTheme);
             if (localStoTheme == 'dark') {
@@ -42,7 +42,7 @@ const IntervalWrapper = ({ children }) => {
     useEffect(() => {
         if (savetoLS) {
             console.log('setting theme in local storage')
-            localStorage.setItem('theme', darkMode)
+            localStorage.setItem('theme', JSON.stringify(darkMode))
         }
     }, [darkMode])
 

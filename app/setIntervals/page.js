@@ -174,8 +174,8 @@ const SetIntervals = () => {
       const lastSavedDate = (currentDate + '-' + currentMonth + '-' + currentYear)
 
       console.log(lastSavedDate)
-      localStorage.setItem('lastSavedDate', lastSavedDate)
-      const savedIntToIDB = localStorage.getItem('savedIntToIDB')
+      localStorage.setItem('lastSavedDate', JSON.stringify(lastSavedDate))
+      const savedIntToIDB = JSON.parse(localStorage.getItem('savedIntToIDB'))
       console.log(savedIntToIDB)
       localStorage.removeItem('savedIntToIDB')
 

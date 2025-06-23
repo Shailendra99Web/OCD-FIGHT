@@ -61,7 +61,7 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory }) => {
         const request = indexedDB.open('OCDAppDB', dbVer+1);
 
         request.onsuccess = (event) => {
-            localStorage.setItem('dbVer', dbVer+1)
+            localStorage.setItem('dbVer', JSON.stringify(dbVer+1))
             const db = event.target.result;
 
             // Start a transaction

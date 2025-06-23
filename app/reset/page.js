@@ -9,7 +9,7 @@ const Reset = () => {
             localStorage.removeItem('previousCount');
             localStorage.removeItem('allPreviousCount');
             localStorage.removeItem('lastSavedDate');
-            localStorage.setItem('savedToIDB', true)
+            localStorage.setItem('savedToIDB', JSON.stringify(true))
             // console.log('Removed the allPreviousCount & lastSavedDate from localStorage');
             alert('Soft Reset Successful!')
             window.location.href = '/'; // Navigate and reload

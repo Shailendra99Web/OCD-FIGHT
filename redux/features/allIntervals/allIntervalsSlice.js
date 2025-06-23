@@ -25,7 +25,9 @@ export const allIntervalsSlice = createSlice({
       { start: "15:00", end: "18:00" },
       { start: "18:00", end: "21:00" },
       { start: "21:00", end: "00:00" }
-    ]
+    ],
+
+    lastSavedDateforAllHistory: '0-0-0'
   },
   reducers: {
     replace: (state, action) => {
@@ -64,14 +66,21 @@ export const allIntervalsSlice = createSlice({
       if (action.payload.saveToLS) {
         localStorage.setItem('allIntervals', JSON.stringify(newAllIntervalsArr));
       }
-    }
-    // incrementByAmount: (state, action) => {
-    //   state.value += action.payload
-    // }
+    },
+    replaceLastSavedDateAllHis: (state, action) => {
+      console.log('...from lastSavedDateforAllHistory replace')
+      console.log('replaceLastSavedDateAllHis', action.payload)
+      state.lastSavedDateforAllHistory = action.payload.lSDAllHistory
+      console.log('lastSavedDateforAllHistory.State', state.lastSavedDateforAllHistory)
+      if (action.payload.saveToLS) {
+        localStorage.setItem('lastSavedDateforAllHistory', JSON.stringify(state.lastSavedDateforAllHistory))
+        console.log('Saved lastSavedDateforAllHistory')
+      }
+    },
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { replace, replaceFirstInt, remove, add } = allIntervalsSlice.actions
+export const { replace, replaceFirstInt, remove, add, replaceLastSavedDateAllHis } = allIntervalsSlice.actions
 
 export default allIntervalsSlice.reducer
