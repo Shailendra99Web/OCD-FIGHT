@@ -94,7 +94,7 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistor
                 const delMonth = mon.slice(5) //Month1
                 cleanOpenedHistory(delYear, delMonth)
                 dispatch(replaceLoaderValue(100))
-                toast.success(`Month ${objStoName.slice(1)} has been removed`);
+                toast.success(`History of Month ${mon.slice(5)} - ${objectStoreName.slice(1)} has been removed`);
             } catch (error) {
                 console.error(error); // Catch any errors and log them
                 dispatch(replaceLoaderValue(100))
