@@ -1,7 +1,11 @@
 'use client'
+import { replaceLoaderValue } from '@/redux/features/allIntervals/allIntervalsSlice'
+import { useAppDispatch } from '@/redux/hooks'
 import React, { useEffect, useState } from 'react'
 
 const History = () => {
+
+    const dispatch = useAppDispatch()
 
     // To hold all previous counts
     const [allPreviousCount, setAllPreviousCount] = useState(null)
@@ -32,6 +36,7 @@ const History = () => {
         const month = getMonthName(new Date().getMonth())
         const year = String(new Date().getFullYear())
         setTodayDate(date +' '+ month +', '+ year)
+        dispatch(replaceLoaderValue(100))
     }, [])
 
     return (

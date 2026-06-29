@@ -1,7 +1,17 @@
+'use client'
 import Link from 'next/link'
-import React from 'react'
+import { useAppDispatch } from '@/redux/hooks'
+import React, { useEffect } from 'react'
+import { replaceLoaderValue } from '@/redux/features/allIntervals/allIntervalsSlice'
 
 const About = () => {
+
+  const dispatch = useAppDispatch()
+
+  useEffect(()=>{
+    dispatch(replaceLoaderValue(100))
+  }, [])
+
   return (
     <div className='px-4 m-4 min-h-[80vh]'>
       <h1 className='text-xl text-center'>About</h1>

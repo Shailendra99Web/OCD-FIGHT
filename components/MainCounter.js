@@ -4,9 +4,12 @@ import Link from 'next/link'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
-import { replaceLastSavedDateAllHis } from '@/redux/features/allIntervals/allIntervalsSlice'
+import { replaceLastSavedDateAllHis, replaceLoaderValue } from '@/redux/features/allIntervals/allIntervalsSlice'
 
 const MainCounter = () => {
+
+  const loadingBarRef = useAppSelector((state) => state.allIntervals.loadingBarRef)
+
 
   // To hold ocd count in form.
   const [ocdCount, setOcdCount] = useState({ compulsions: 0, ruminations1: 0, ruminations2: 0 })
@@ -216,7 +219,7 @@ const MainCounter = () => {
     if (previousCount.saveToLS == true) {
       // To store 'previousCount' in localStorage.
       localStorage.setItem("previousCount", JSON.stringify({ preCompulsions: previousCount.preCompulsions, preRuminations1: previousCount.preRuminations1, preRuminations2: previousCount.preRuminations2 }))
-
+      dispatch(replaceLoaderValue(50))
       // To update 'allPreviousCount' and save last date, when previous count was saved.
       const currentDate = new Date().getDate()// To get current Date
       const currentMonth = (new Date().getMonth() + 1)// To get current Month
@@ -263,10 +266,11 @@ const MainCounter = () => {
       localStorage.setItem("allPreviousCount", JSON.stringify(allPreviousCount))
       localStorage.setItem('savedToIDB', JSON.stringify(false))
       setAllPreCountSaveToLS(false)
+      dispatch(replaceLoaderValue(100))
     }
   }, [allPreviousCount])
 
-  
+
   // useEffect 4 - To set 'currentInterval' from allIntervals, according to current time.
   useEffect(() => {
     console.log('useEffect 4 / To set current Interval...')
@@ -298,12 +302,15 @@ const MainCounter = () => {
     console.log('currentYear', currentYear)
 
     if ((localStoLastSavedDate?.split('-')[1] != currentMonth) || (localStoLastSavedDate?.split('-')[2] != currentYear)) {
+      console.log('removing intervalsforIDB')
       localStorage.removeItem('intervalsforIDB')
     }
+    dispatch(replaceLoaderValue(100))
   }, [])
 
   // To update 'previousCount', 'saveBtn'.
   const save = () => {
+    dispatch(replaceLoaderValue(30))
     const intervalsforIDBLocalSto = JSON.parse(localStorage.getItem('intervalsforIDB'))
     if (intervalsforIDBLocalSto) {
       if (ocdCount.compulsions != previousCount.preCompulsions || ocdCount.ruminations1 != previousCount.preRuminations1 || ocdCount.ruminations2 != previousCount.preRuminations2) {
@@ -314,6 +321,7 @@ const MainCounter = () => {
       toast.success('Saved!');
     } else {
       toast.warn('Please set the intervals for this month first!')
+      dispatch(replaceLoaderValue(40))
       router.push('/setIntervals')
     }
   };
@@ -346,7 +354,7 @@ const MainCounter = () => {
       <div className='bg-slate-100 dark:bg-gray-700 dark:text-slate-200 text-gray-900 lg:w-3/4 xl:w-3/5 2xl:w-6/12 m-auto px-2 py-4 md:p-7 text-center border-4 border-blue-300 rounded-lg '>
         <div>
           <p className='font-bold text-lg'>{currentInterval.start + " to " + currentInterval.end}</p>
-          <Link href="/setIntervals" className='inline-block my-2 mx-2 py-2 px-3 bg-green-600 text-slate-100 hover:bg-green-500 border-2 border-green-500 rounded'>Change Intervals</Link>
+          <Link href="/setIntervals" className='inline-block my-2 mx-2 py-2 px-3 bg-green-600 text-slate-100 hover:bg-green-500 border-2 border-green-500 rounded' onClick={() => { dispatch(replaceLoaderValue(40)) }}>Change Intervals</Link>
         </div>
 
         <div className='my-3 flex flex-col justify-center items-center space-y-4'>
@@ -354,7 +362,7 @@ const MainCounter = () => {
             <h2 className='py-2 bg-blue-500 text-white text-lg'>Compulsions</h2>
             <div className='flex justify-center items-center space-x-8 md:space-x-4 border-y-2 border-red-500'>
               <p className='w-12 text-nowrap text-red-500'>{previousCount.preCompulsions}</p>
-              <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
+              <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50' onClick={() => { dispatch(replaceLoaderValue(40)) }}>History</Link>
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
               <input name="compulsions" id="compulsions" className="p-2 m-1 w-16 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.compulsions} placeholder='Compution Count' />
@@ -369,7 +377,7 @@ const MainCounter = () => {
             <h2 className='py-2 bg-blue-500 text-white text-lg'>Ruminations</h2>
             <div className='flex justify-center items-center space-x-8 md:space-x-4 border-y-2 border-red-500'>
               <p className='w-12 text-nowrap text-red-500'>{previousCount.preRuminations1 + ' : ' + previousCount.preRuminations2}</p>
-              <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50'>History</Link>
+              <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50' onClick={() => { dispatch(replaceLoaderValue(40)) }}>History</Link>
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
               <input name="ruminations1" id="ruminations1" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleInput} value={ocdCount.ruminations1} placeholder='Rum1 Count' />

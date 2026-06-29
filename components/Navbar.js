@@ -1,9 +1,14 @@
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { useAppSelector } from '@/redux/hooks'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
+import { replaceLoaderValue } from '@/redux/features/allIntervals/allIntervalsSlice'
+// import { useRouter } from 'next/router'
 
 const Navbar = ({ setDarkMode, showSun, showMoon }) => {
+
+
+    const dispatch = useAppDispatch()
 
     const lastSavedDateforAllHistory = useAppSelector((state) => state.allIntervals.lastSavedDateforAllHistory) // To get allHistory LastSavedDate from redux store.
 
@@ -21,7 +26,7 @@ const Navbar = ({ setDarkMode, showSun, showMoon }) => {
         <>
             <nav className="bg-blue-200 border-gray-200 dark:bg-gray-900">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                    <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse">
+                    <Link href="/" className="flex items-center space-x-3 rtl:space-x-reverse" onClick={()=>{console.log(window.location.href);if(window.location.href !== 'http://localhost:3000/'){dispatch(replaceLoaderValue(30))}}}>
                         {/* <img src="/images/ocdLogo.png" className="h-10" alt="Logo" /> */}
                         <span className=" self-center text-2xl font-bold whitespace-nowrap dark:text-white text-gray-800">OCD FIGHT</span>
                     </Link>
@@ -46,19 +51,19 @@ const Navbar = ({ setDarkMode, showSun, showMoon }) => {
                     <div className={`${navItemDisplay} w-full md:block md:w-auto`} id="navbar-default">
                         <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-200 rounded-lg bg-transparent md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 md:items-center">
                             <li>
-                                <Link href="/" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Home</Link>
+                                <Link href="/" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" onClick={()=>{console.log(window.location.href);if(window.location.href !== 'http://localhost:3000/'){dispatch(replaceLoaderValue(30))}}}>Home</Link>
                             </li>
                             <li>
-                                <Link href="/about" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">About</Link>
+                                <Link href="/about" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" onClick={()=>{console.log(window.location.href);if(window.location.href !== 'http://localhost:3000/about'){dispatch(replaceLoaderValue(30))}}}>About</Link>
                             </li>
                             <li>
-                                <Link href="/setIntervals" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Set Intervals</Link>
+                                <Link href="/setIntervals" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" onClick={()=>{console.log(window.location.href);if(window.location.href !== 'http://localhost:3000/setIntervals'){dispatch(replaceLoaderValue(30))}}}>Set Intervals</Link>
                             </li>
                             <li>
-                                <Link href={`/allHistory/${lastSavedDateforAllHistory.split('-').slice(1).join('-')}`} className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">All History</Link>
+                                <Link href={`/allHistory/${lastSavedDateforAllHistory.split('-').slice(1).join('-')}`} className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" onClick={()=>{console.log(window.location.href);if(window.location.href !== `http://localhost:3000/allHistory/${lastSavedDateforAllHistory.split('-').slice(1).join('-')}`){dispatch(replaceLoaderValue(30))}}}>All History</Link>
                             </li>
                             <li>
-                                <Link href="/reset" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Reset</Link>
+                                <Link href="/reset" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" onClick={()=>{console.log(window.location.href);if(window.location.href !== 'http://localhost:3000/reset'){dispatch(replaceLoaderValue(30))}}}>Reset</Link>
                             </li>
                             <li>
                                 <Link href="/" className="block py-2 px-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-800 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact</Link>

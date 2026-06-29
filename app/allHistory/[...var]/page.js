@@ -1,9 +1,13 @@
 'use client'
 import DrawerChildren from '@/components/DrawerChildren'
+import { replaceLoaderValue } from '@/redux/features/allIntervals/allIntervalsSlice'
+import { useAppDispatch } from '@/redux/hooks'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 const AllHistory = ({ params }) => {
+
+    const dispatch = useAppDispatch()
 
     // To hold all previous counts.
     const [monthHistory, setMonthHistory] = useState([])
@@ -24,7 +28,7 @@ const AllHistory = ({ params }) => {
 
     // To hold all history Years.
     const [objectStores, setObjectStores] = useState([])
-    
+
     // To set width of sidebar(Drawer) 
     const [showDrawer, setShowDrawer] = useState('w-0')
 
@@ -95,6 +99,7 @@ const AllHistory = ({ params }) => {
 
     useEffect(() => {
         retrivingHistory()
+        dispatch(replaceLoaderValue(100))
     }, [])
 
     // To format time in two digits.
@@ -196,7 +201,7 @@ const AllHistory = ({ params }) => {
 
                             return <>
                                 <tr>
-                                    <td rowSpan='2' className='border border-gray-300 dark:border-slate-600 p-2 dark:text-slate-300 text-slate-500 text-center'>{dayKey.slice(1).toString().padStart(2, '0')} Oct</td>
+                                    <td rowSpan='2' className='border border-gray-300 dark:border-slate-600 p-2 dark:text-slate-300 text-slate-500 text-center'>{dayKey.slice(1).toString().padStart(2, '0')}</td>
                                     {dayData.map((count, index) => {
                                         totalCompulsions = totalCompulsions + Number(count.totalCom)
                                     })}

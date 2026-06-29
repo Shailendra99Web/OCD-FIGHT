@@ -1,11 +1,11 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector, useAppStore } from "@/redux/hooks"
-import { add, remove, replace, replaceFirstInt } from '@/redux/features/allIntervals/allIntervalsSlice'
+import { add, remove, replace, replaceFirstInt, replaceLoaderValue } from '@/redux/features/allIntervals/allIntervalsSlice'
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from "react-toastify";
 // import GlobalApi from "@/utils/GlobalApi";
-import {removeObjKey} from "@/utils/GlobalApi";
+import { removeObjKey } from "@/utils/GlobalApi";
 
 // uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
@@ -23,6 +23,7 @@ const SetIntervals = () => {
   const [holdIntervals, setHoldIntervals] = useState([])
 
   useEffect(() => {
+    dispatch(replaceLoaderValue(100))
     if (allIntervals.length > 0) {
       setFirstInterval({ ...firstInterval, end: allIntervals[0].end })
       setHoldIntervals(allIntervals)
@@ -159,9 +160,9 @@ const SetIntervals = () => {
     })
   }
 
-  const saveAndSoftReset = () => {
-    if (confirm('Soft-Reset will erase OCD Counter & All Histories, Are you sure ?')) {
-
+  const saveAndHardReset = async () => {
+    if (confirm(`Hard-Reset will erase OCD Counter & all this month's History, Are you sure ?`)) {
+      dispatch(replaceLoaderValue(30))
       // To save last date, when previous count was saved.
       const currentDate = new Date().getDate()// To get current Date
       const currentMonth = (new Date().getMonth() + 1)// To get current Month
@@ -169,23 +170,21 @@ const SetIntervals = () => {
 
       const delYear = 'Y' + currentYear //Y2024
       const delMonth = 'Month' + currentMonth //Month1
-      console.log(delYear, delMonth)
-
-      removeObjKey(delYear, delMonth)
-
-      const lastSavedDate = (currentDate + '-' + currentMonth + '-' + currentYear)
-
-      console.log(lastSavedDate)
-      localStorage.setItem('lastSavedDate', JSON.stringify(lastSavedDate))
-      const savedIntToIDB = JSON.parse(localStorage.getItem('savedIntToIDB'))
-      console.log(savedIntToIDB)
-      localStorage.removeItem('savedIntToIDB')
-
-      dispatch(replace({ holdIntervals, saveToLS: true }))
+      dispatch(replaceLoaderValue(40))
+      try {
+        await removeObjKey(delYear, delMonth)
+      }
+      catch (error) {
+        console.log(error)
+      };
+      dispatch(replace({ holdIntervals, saveToLS: true }));
+      const lastSavedDate = (currentDate + '-' + currentMonth + '-' + currentYear);
+      localStorage.setItem('lastSavedDate', JSON.stringify(lastSavedDate));
+      localStorage.removeItem('savedIntToIDB');
+      localStorage.setItem('savedToIDB', JSON.stringify(true))
       localStorage.removeItem('previousCount');
       localStorage.removeItem('allPreviousCount');
-      console.log('Removed the allPreviousCount & lastSavedDate from localStorage');
-      alert('Soft Reset Successful!')
+      dispatch(replaceLoaderValue(100))
       toast.success('Intervals Saved Successful!');
       window.location.href = '/'; // Navigate and reload
     }
@@ -209,7 +208,7 @@ const SetIntervals = () => {
       <div className='my-4 relative flex flex-col items-center space-y-4 min-h-[80vh]'>
 
         <h1 className='text-xl'>Set Intervals</h1>
-        <p className='text-center pb-4 px-4 text-yellow-500 font-bold'>Note: Whenever you edit the Intervals, Soft Reset will be needed to start with new Intervals.</p>
+        <p className='text-center pb-4 px-4 text-yellow-500 font-bold'>Note: Whenever you edit the Intervals, Hard Reset will be needed to start with new Intervals.</p>
 
         <form id='IntInput' className='flex items-center justify-center' onSubmit={handleSetInterval}>
           <input id='start' type='time' value={interval.start} onChange={handleIntervalChange} className='text-gray-800 w-min rounded p-2' required />
@@ -291,7 +290,7 @@ const SetIntervals = () => {
         <button type="button" onClick={resetToDefault} className="absolute top-0 right-0 focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 my-[0!important] me-4 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900">Reset</button>
 
 
-        <button type="button" onClick={saveAndSoftReset} className="focus:outline-none text-white bg-yellow-700 hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-900">Save & Soft-Reset</button>
+        <button type="button" onClick={saveAndHardReset} className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Save & Hard-Reset</button>
       </div>
 
     </>

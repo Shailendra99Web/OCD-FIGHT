@@ -1,11 +1,15 @@
+import { replaceLoaderValue } from '@/redux/features/allIntervals/allIntervalsSlice';
 import { removeObjectStore, removeObjKey } from '@/utils/GlobalApi';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faSnowflake, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistoryYear }) => {
+
+    const dispatch = useDispatch()
 
     const [allMonths, setAllMonths] = useState([])
 
@@ -55,22 +59,55 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistor
         };
     }
 
-    const removingObjKey = (objStoName, mon) => {
-        const delYear = objStoName.slice(1) //Y2024
-        const delMonth = mon.slice(5) //Month1
-        removeObjKey(objStoName, mon)
-        cleanOpenedHistory(delYear, delMonth)
-    }
-
     useEffect(() => {
         retriveAllMonths()
     }, [])
 
+    const removingObjectStore = async (e) => {
+        if (confirm(`This will remove all history of year ${objectStoreName.slice(1)}, Are you sure ?`)) {
+            const parentElement = e.currentTarget.parentNode.parentNode;
+            dispatch(replaceLoaderValue(40))
+            try {
+                await removeObjectStore(objectStoreName); // Wait for the promise to resolve
+                cleanOpenedHistoryYear(objectStoreName.slice(1));
+                parentElement.remove();
+                dispatch(replaceLoaderValue(100))
+                toast.success(`${objectStoreName.slice(1)} history has been removed`);
+            } catch (error) {
+                console.error(error); // Catch any errors and log them
+                dispatch(replaceLoaderValue(100))
+                toast.error(`An unexpected error occurred while removing history.`);
+            }
+        }
+    };
+
+    const removingObjKey = async (e, objStoName, mon) => {
+        if (confirm(`This will remove history of ${mon.slice(5)} - ${objectStoreName.slice(1)}, Are you sure ?`)) {
+            console.log(e.currentTarget);
+            const parentElement = e.currentTarget.parentNode
+            dispatch(replaceLoaderValue(40))
+
+            try {
+                await removeObjKey(objStoName, mon); // Wait for the promise to resolve
+                parentElement.remove();
+                const delYear = objStoName.slice(1) //Y2024
+                const delMonth = mon.slice(5) //Month1
+                cleanOpenedHistory(delYear, delMonth)
+                dispatch(replaceLoaderValue(100))
+                toast.success(`Month ${objStoName.slice(1)} has been removed`);
+            } catch (error) {
+                console.error(error); // Catch any errors and log them
+                dispatch(replaceLoaderValue(100))
+                toast.error(`An unexpected error occurred while removing history.`);
+            }
+        }
+    }
+
     return (
         <li className='border-b-2 p-2 hover:bg-gray-600'>
             <div className='flex justify-between'>
-                <Link href={'#'} className=''>{objectStoreName}</Link>
-                <button className='' onClick={(e) => { console.log(e.currentTarget.parentNode.parentNode); e.currentTarget.parentNode.parentNode.remove(); cleanOpenedHistoryYear(objectStoreName.slice(1)); removeObjectStore(objectStoreName); }}>
+                <Link href={'#'} className=''>{objectStoreName.slice(1)}</Link>
+                <button className='' onClick={(e) => { removingObjectStore(e); }}>
                     <FontAwesomeIcon icon={faTrash} />
                 </button>
             </div>
@@ -80,8 +117,8 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistor
                     if (month.slice(-1) != 't') {
 
                         return <li key={index} className='flex justify-between'>
-                            <Link href={month.slice(5) + '-' + objectStoreName.slice(1)}>{month}</Link>
-                            <button className='inline-block' onClick={(e) => { console.log(e.currentTarget); e.currentTarget.parentNode.remove(); removingObjKey(objectStoreName, month) }}>
+                            <Link href={month.slice(5) + '-' + objectStoreName.slice(1)}>{`Month ${month.slice(5)}`}</Link>
+                            <button className='inline-block' onClick={(e) => { removingObjKey(e, objectStoreName, month) }}>
                                 <FontAwesomeIcon icon={faTrash} />
                             </button>
                         </li>

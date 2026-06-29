@@ -27,7 +27,9 @@ export const allIntervalsSlice = createSlice({
       { start: "21:00", end: "00:00" }
     ],
 
-    lastSavedDateforAllHistory: '0-0-0'
+    lastSavedDateforAllHistory: '0-0-0',
+
+    loader: 0,
   },
   reducers: {
     replace: (state, action) => {
@@ -77,10 +79,14 @@ export const allIntervalsSlice = createSlice({
         console.log('Saved lastSavedDateforAllHistory')
       }
     },
+    replaceLoaderValue: (state, action) => {
+      console.log('newState', action.payload)
+      state.loader= action.payload
+    }
   }
 })
 
 // Action creators are generated for each case reducer function
-export const { replace, replaceFirstInt, remove, add, replaceLastSavedDateAllHis } = allIntervalsSlice.actions
+export const { replace, replaceFirstInt, remove, add, replaceLastSavedDateAllHis, replaceLoaderValue } = allIntervalsSlice.actions
 
 export default allIntervalsSlice.reducer

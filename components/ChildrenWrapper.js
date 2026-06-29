@@ -1,12 +1,15 @@
 'use client'
 import { replace, replaceLastSavedDateAllHis } from '@/redux/features/allIntervals/allIntervalsSlice'
-import { useAppDispatch } from '@/redux/hooks'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import { ToastContainer } from 'react-toastify'
+import LoadingBar from 'react-top-loading-bar'
 
 const ChildrenWrapper = ({ children }) => {
+    const loader = useAppSelector((state) => state.allIntervals.loader)
+
     const [isInitialized, setIsInitialized] = useState(false); // To render other components or not
     const dispatch = useAppDispatch()
     const [savetoLS, setSavetoLS] = useState(false)
@@ -73,6 +76,7 @@ const ChildrenWrapper = ({ children }) => {
 
     // Pass toggleDarkMode to children (Navbar)
     return <div className={`${darkMode} bg-gradient-to-r from-sky-500 to-indigo-500 dark:bg-gray-800 dark:from-gray-800 dark:to-gray-800 dark:text-slate-300 transition-all duration-500 ease-in-out`}>
+        <LoadingBar color={'#1e90ff'} height={3} progress={loader} />
         <Navbar setDarkMode={toggleDarkMode} showSun={showSun} showMoon={showMoon} />
         {children}
         <Footer />
@@ -85,7 +89,7 @@ const ChildrenWrapper = ({ children }) => {
             pauseOnFocusLoss
             draggable
             pauseOnHover
-            theme= {darkMode == 'dark'? 'dark':'light'}
+            theme={darkMode == 'dark' ? 'dark' : 'light'}
         />
     </div>
 }

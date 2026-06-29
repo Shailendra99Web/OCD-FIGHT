@@ -1,5 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
+import { faSnowflake } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const Footer = () => {
   return (
@@ -27,7 +29,7 @@ const Footer = () => {
             </ul>
           </div>
           <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-          <span className='block text-sm text-gray-500 sm:text-center dark:text-gray-400'>Made with &#129504; by Shailendra | Thank You &#129419; <Link href="https://youtube.com/@ocdhelp?si=9WEzLRviQY6nvd_j" target='blank' className='hover:underline'>Ali Greymond</Link> &#129419;</span>
+                    <span className='block text-sm text-gray-500 sm:text-center dark:text-gray-400'>Made with &#129504; by Shailendra <FontAwesomeIcon className='animate-spin text-lg' icon={faSnowflake} /> Thank You &#129419; <Link href="https://youtube.com/@ocdhelp?si=9WEzLRviQY6nvd_j" target='blank' className='hover:underline'>Ali Greymond</Link> &#129419;</span>
           <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2024 <Link href="/" className="hover:underline">OCD FIGHT</Link>. All Rights Reserved.</span>
         </div>
       </div>
