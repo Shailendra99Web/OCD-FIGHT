@@ -1,7 +1,10 @@
+import { removeObjectStore, removeObjKey } from '@/utils/GlobalApi';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react'
 
-const DrawerChildren = ({ objectStoreName, cleanOpenedHistory }) => {
+const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistoryYear }) => {
 
     const [allMonths, setAllMonths] = useState([])
 
@@ -11,6 +14,11 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory }) => {
             console.log('Successfully opened IDB')
 
             const db = event.target.result;
+
+            if (!db.objectStoreNames.contains(objectStoreName)) {
+                console.error(`Object store "${objectStoreName}" not found. Stopping execution.`);
+                return; // Exit the function if the object store does not exist
+            }
 
             let transaction = db.transaction(objectStoreName, 'readonly'); // Open a transaction for the object store
             let objectStore = transaction.objectStore(objectStoreName); // Access the object store
@@ -46,55 +54,62 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory }) => {
         };
     }
 
-    const removeObjKey = (objStoName, mon) => {
-        console.log('deleting key')
-
+    const removingObjKey = (objStoName, mon) => {
         const delYear = objStoName.slice(1) //Y2024
         const delMonth = mon.slice(5) //Month1
+        removeObjKey(objStoName, mon)
         cleanOpenedHistory(delYear, delMonth)
-
-        const dbVer = JSON.parse(localStorage.getItem('dbVer'))
-        console.log(dbVer)
-        console.log(objStoName)
-        console.log(mon)
-
-        const request = indexedDB.open('OCDAppDB', dbVer+1);
-
-        request.onsuccess = (event) => {
-            localStorage.setItem('dbVer', JSON.stringify(dbVer+1))
-            const db = event.target.result;
-
-            // Start a transaction
-            const transaction = db.transaction(objStoName, 'readwrite');
-            const objectStore = transaction.objectStore(objStoName);
-
-            // Delete the key
-            const deleteRequest = objectStore.delete(mon);
-            const intDeleteRequest = objectStore.delete(mon+'Int');
-
-            deleteRequest.onsuccess = () => {
-                console.log('Key successfully deleted.');
-                // loadingHistory()
-            };
-
-            deleteRequest.onerror = (event) => {
-                console.error('Error deleting key:', event.target.error);
-            };
-
-            intDeleteRequest.onsuccess = () => {
-                console.log('Interval Key successfully deleted.');
-            };
-
-            intDeleteRequest.onerror = (event) => {
-                console.error('Error deleting Interval key:', event.target.error);
-            };
-        };
-
-        request.onerror = (event) => {
-            console.error('Error opening database:', event.target.error);
-        };
-
     }
+
+    // const removeObjKey = (objStoName, mon) => {
+    //     console.log('deleting key')
+
+    //     const delYear = objStoName.slice(1) //Y2024
+    //     const delMonth = mon.slice(5) //Month1
+    //     cleanOpenedHistory(delYear, delMonth)
+
+    //     const dbVer = JSON.parse(localStorage.getItem('dbVer'))
+    //     console.log(dbVer)
+    //     console.log(objStoName)
+    //     console.log(mon)
+
+    //     const request = indexedDB.open('OCDAppDB', dbVer+1);
+
+    //     request.onsuccess = (event) => {
+    //         localStorage.setItem('dbVer', JSON.stringify(dbVer+1))
+    //         const db = event.target.result;
+
+    //         // Start a transaction
+    //         const transaction = db.transaction(objStoName, 'readwrite');
+    //         const objectStore = transaction.objectStore(objStoName);
+
+    //         // Delete the key
+    //         const deleteRequest = objectStore.delete(mon);
+    //         const intDeleteRequest = objectStore.delete(mon+'Int');
+
+    //         deleteRequest.onsuccess = () => {
+    //             console.log('Key successfully deleted.');
+    //             // loadingHistory()
+    //         };
+
+    //         deleteRequest.onerror = (event) => {
+    //             console.error('Error deleting key:', event.target.error);
+    //         };
+
+    //         intDeleteRequest.onsuccess = () => {
+    //             console.log('Interval Key successfully deleted.');
+    //         };
+
+    //         intDeleteRequest.onerror = (event) => {
+    //             console.error('Error deleting Interval key:', event.target.error);
+    //         };
+    //     };
+
+    //     request.onerror = (event) => {
+    //         console.error('Error opening database:', event.target.error);
+    //     };
+
+    // }
 
     useEffect(() => {
         retriveAllMonths()
@@ -102,7 +117,12 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory }) => {
 
     return (
         <li className='border-b-2 p-2 hover:bg-gray-600'>
-            <Link href={'#'} className=''>{objectStoreName}</Link>
+            <div className='flex justify-between'>
+                <Link href={'#'} className=''>{objectStoreName}</Link>
+                <button className='' onClick={(e) => { console.log(e.currentTarget.parentNode.parentNode); e.currentTarget.parentNode.parentNode.remove(); cleanOpenedHistoryYear(objectStoreName.slice(1)); removeObjectStore(objectStoreName) }}>
+                    <FontAwesomeIcon icon={faTrash} />
+                </button>
+            </div>
 
             <ul className='subnav overflow-hidden opacity-0 max-h-0 mx-8 list-disc transition-all duration-300'>
                 {allMonths.map((month, index) => {
@@ -110,7 +130,9 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory }) => {
 
                         return <li key={index} className='flex justify-between'>
                             <Link href={month.slice(5) + '-' + objectStoreName.slice(1)}>{month}</Link>
-                            <button className='' onClick={(e) => { e.target.parentNode.remove(); removeObjKey(objectStoreName, month) }}>&#10008;</button>
+                            <button className='inline-block' onClick={(e) => { console.log(e.currentTarget); e.currentTarget.parentNode.remove(); removingObjKey(objectStoreName, month) }}>
+                                <FontAwesomeIcon icon={faTrash} />
+                            </button>
                         </li>
                     } else {
                         console.log(month)

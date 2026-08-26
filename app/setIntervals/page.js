@@ -4,6 +4,9 @@ import { useAppDispatch, useAppSelector, useAppStore } from "@/redux/hooks"
 import { add, remove, replace, replaceFirstInt } from '@/redux/features/allIntervals/allIntervalsSlice'
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from "react-toastify";
+// import GlobalApi from "@/utils/GlobalApi";
+import {removeObjKey} from "@/utils/GlobalApi";
+
 // uuidv4(); // ⇨ '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
 
 const SetIntervals = () => {
@@ -90,6 +93,7 @@ const SetIntervals = () => {
     } else {
       setInterval({ ...interval, end: e.target.value })
     }
+    console.log(interval)
   }
 
   // onChange - To change 'first interval' state
@@ -155,14 +159,6 @@ const SetIntervals = () => {
     })
   }
 
-  const [updateIntervalsex, setUpdateIntervalsex] = useState({
-    //{ Int [[], []] }
-    IntOne: [[{ start: 'start' }, { till: '14-12-2028' }], ['Intervals']],//2028
-    IntTwo: [[{ start: '14-12-2028' }, { till: '14-12-2029' }], ['Intervals']],//2029
-    IntThree: [[{ start: '14-12-2029' }, { till: '14-12-2030' }], ['Intervals']],//2030
-    IntFour: [[{ start: '14-12-2030' }, { till: '14-12-2031' }], ['Intervals']]//2031
-  })
-
   const saveAndSoftReset = () => {
     if (confirm('Soft-Reset will erase OCD Counter & All Histories, Are you sure ?')) {
 
@@ -170,6 +166,12 @@ const SetIntervals = () => {
       const currentDate = new Date().getDate()// To get current Date
       const currentMonth = (new Date().getMonth() + 1)// To get current Month
       const currentYear = new Date().getFullYear()
+
+      const delYear = 'Y' + currentYear //Y2024
+      const delMonth = 'Month' + currentMonth //Month1
+      console.log(delYear, delMonth)
+
+      removeObjKey(delYear, delMonth)
 
       const lastSavedDate = (currentDate + '-' + currentMonth + '-' + currentYear)
 
@@ -221,7 +223,7 @@ const SetIntervals = () => {
         <div className="flex flex-col justify-center items-center space-y-4 border-t-2 border-b-2 border-blue-200 px-7 py-4">
 
           <form id='firstIntInput' className='flex items-center' onSubmit={handleSetInterval}>
-            <div key={uuidv4()} className="mx-2 flex gap-3 justify-center items-center">
+            <div className="mx-2 flex gap-3 justify-center items-center">
               <p>{'00:00'} - {<input id='end' type='time' value={firstInterval.end} onChange={handleFirstIntervalChange} className='text-gray-800 w-min p-1 rounded' required />}</p>
               <button type='submit' disabled={firstInterval.disableFirstIntInput} className="py-1 px-2 bg-green-500 text-slate-100 disabled:bg-green-400 rounded">Set</button>
             </div>

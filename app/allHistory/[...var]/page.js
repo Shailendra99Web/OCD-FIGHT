@@ -146,11 +146,24 @@ const AllHistory = ({ params }) => {
     const cleanOpenedHistory = (delYear, delMonth) => {
         console.log('Triggered cleanOpenedHistory')
 
-        console.log('opened', month+'-'+year)
-        console.log('del', delMonth+'-'+delYear)
+        console.log('opened', month + '-' + year)
+        console.log('del', delMonth + '-' + delYear)
         if (delYear == year && delMonth == month) {
             console.log('Match found in cleanOpenedHistory')
             setMonthHistory([])
+        }
+    }
+
+    const cleanOpenedHistoryYear = (delYear) => {
+        console.log('Triggered cleanOpenedHistory')
+
+        console.log('opened', year)
+        console.log('del', delYear)
+        if (delYear == year) {
+            console.log('Match found in cleanOpenedHistoryYear')
+            setMonthHistory([])
+            setMonth('0')
+            setYear('0')
         }
     }
 
@@ -164,7 +177,7 @@ const AllHistory = ({ params }) => {
                     <h1 className='text-center pb-3'>YEARS</h1>
                     <ul>
                         {objectStores && objectStores?.map((objectStore, index) => (
-                            <DrawerChildren key={index} objectStoreName={objectStore} cleanOpenedHistory={cleanOpenedHistory}></DrawerChildren>
+                            <DrawerChildren key={index} objectStoreName={objectStore} cleanOpenedHistory={cleanOpenedHistory} cleanOpenedHistoryYear={cleanOpenedHistoryYear}></DrawerChildren>
                         ))}
                     </ul>
                 </div>

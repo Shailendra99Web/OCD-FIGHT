@@ -3,9 +3,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { useRouter } from 'next/navigation'
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { replaceLastSavedDateAllHis } from '@/redux/features/allIntervals/allIntervalsSlice'
-import { createImmutableStateInvariantMiddleware } from '@reduxjs/toolkit'
 
 const MainCounter = () => {
 
@@ -33,10 +32,12 @@ const MainCounter = () => {
   // Refered to ocd conter element
   const CounterDivRef = useRef(null);
 
+  // To dipatch Store reducers
   const dispatch = useAppDispatch()
 
   const allIntervals = useAppSelector((state) => state.allIntervals.allIntervals)// To get all intervals from redux store.
 
+  // For navigation
   const router = useRouter()
 
   useEffect(() => {
@@ -49,17 +50,16 @@ const MainCounter = () => {
     }
   }, [])
 
+  // To save Previous Counts and Intervals to IndexedDB
   const saveToIndexedDB = (db, storedData, savedToIDB, lastDate, lastMonth, lastYear) => {
     console.log(' IndexedDB function...');
-
-    // const savedToIDB = JSON.parse(localStorage.getItem('savedToIDB'))
     console.log(savedToIDB)
+
     if (!savedToIDB) {
       console.log('savingToIndexedDB')
       const localStorageAllPreCount = JSON.parse(localStorage.getItem('allPreviousCount'))
       const savedIntToIDB = JSON.parse(localStorage.getItem('savedIntToIDB'))
 
-      // const currentYear = new Date().getFullYear();
       const objStore = 'Y' + lastYear
       console.log('year is ', objStore)
 
@@ -67,7 +67,6 @@ const MainCounter = () => {
       const transaction = db.transaction([objStore], 'readwrite');
       const objectStore = transaction.objectStore(objStore);
 
-      // Save data to IndexedDB
       console.log('lastDate', lastDate)
       const preDate = 'D' + lastDate
       console.log('lastMonth', lastMonth)
@@ -83,7 +82,8 @@ const MainCounter = () => {
       if (!savedIntToIDB) {
         const putIntervalsRequest = objectStore.put({ month: preMonthInterval, value: JSON.stringify(allIntervals) });
         console.log(savedIntToIDB)
-
+        
+        // Handle success case
         putIntervalsRequest.onsuccess = function () {
           console.log('Intervals Data successfully updated or created for:', preDate);
           console.log(lastDate + '-' + lastMonth + '-' + lastYear);
@@ -94,6 +94,7 @@ const MainCounter = () => {
           console.error('Error updating or creating Intervals data:', event.target.error);
         };
 
+        // To know data has been saved or not in IDB
         localStorage.setItem('savedIntToIDB', JSON.stringify(true))
       }
 
@@ -101,7 +102,6 @@ const MainCounter = () => {
       putCountRequest.onsuccess = function () {
         console.log('Count Data successfully updated or created for:', preDate);
         console.log(lastDate + '-' + lastMonth + '-' + lastYear);
-        // localStorage.setItem('lastSavedDateforAllHistory', lastDate + '-' + lastMonth + '-' + lastYear);
         const lSDAllHistory = lastDate + '-' + lastMonth + '-' + lastYear
         dispatch(replaceLastSavedDateAllHis({ lSDAllHistory, saveToLS: true }))
         localStorage.removeItem('previousCount');
@@ -138,7 +138,7 @@ const MainCounter = () => {
     const LocalStoSavedToIDB = JSON.parse(localStorage.getItem('savedToIDB'))
     console.log(LocalStoSavedToIDB)
 
-    LocalStoSavedToIDB==null ? localStorage.setItem('savedToIDB', JSON.stringify(true)) : console.log('found savedToIDB')
+    LocalStoSavedToIDB == null ? localStorage.setItem('savedToIDB', JSON.stringify(true)) : console.log('found savedToIDB')
 
     if (localStoLastSavedDate) {
       setLastSavedDate(localStoLastSavedDate)
@@ -245,7 +245,6 @@ const MainCounter = () => {
   const save = () => {
     // console.log("saving (save btn clicked) ...");
 
-
     const intervalsforIDBLocalSto = JSON.parse(localStorage.getItem('intervalsforIDB'))
     if (intervalsforIDBLocalSto) {
       if (ocdCount.compulsions != previousCount.preCompulsions || ocdCount.ruminations1 != previousCount.preRuminations1 || ocdCount.ruminations2 != previousCount.preRuminations2) {
@@ -294,7 +293,7 @@ const MainCounter = () => {
 
       setLastSavedDate(currentDate + '-' + currentMonth + '-' + currentYear)
       console.log('set the Lastsaveddate')
-      localStorage.setItem('lastSavedDate', JSON.stringify(lastSavedDate))
+      localStorage.setItem('lastSavedDate', JSON.stringify(currentDate + '-' + currentMonth + '-' + currentYear))
 
       setPreviousCount({ ...previousCount, saveToLS: false })
       setAllPreCountSaveToLS(true)
@@ -340,14 +339,6 @@ const MainCounter = () => {
       setAllPreCountSaveToLS(false)
     }
   }, [allPreviousCount])
-
-  // To save last date in localStorage.
-  // useEffect(() => {
-  //   console.log('lastSavedDate')
-  //   // if (lastSavedDate != null) {
-  //   localStorage.setItem('lastSavedDate', lastSavedDate)
-  //   // }
-  // }, [lastSavedDate])
 
   // To handle input and update 'ocdCount' & 'saveBtn'.
   const handleInput = (e) => {

@@ -1,5 +1,5 @@
 'use client'
-import { replace } from '@/redux/features/allIntervals/allIntervalsSlice'
+import { replace, replaceLastSavedDateAllHis } from '@/redux/features/allIntervals/allIntervalsSlice'
 import { useAppDispatch } from '@/redux/hooks'
 import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
@@ -14,8 +14,6 @@ const IntervalWrapper = ({ children }) => {
     const [darkMode, setDarkMode] = useState('');
     const [showSun, setShowSun] = useState('')
     const [showMoon, setShowMoon] = useState('hidden')
-
-
 
     useEffect(() => {
         console.log('taking theme from local storage')
@@ -54,6 +52,11 @@ const IntervalWrapper = ({ children }) => {
                 if (holdIntervals) {
                     console.log(holdIntervals)
                     dispatch(replace({ holdIntervals, saveToLS: true }))
+                }
+                const lSDAllHistory = JSON.parse(localStorage.getItem('lastSavedDateforAllHistory'))
+                if (lSDAllHistory) {
+                    console.log('saving lastSavedDateforAllHistory..')
+                    dispatch(replaceLastSavedDateAllHis({ lSDAllHistory, saveToLS: false }))
                 }
                 resolve()
             });

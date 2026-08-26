@@ -20,15 +20,6 @@ const Navbar = ({ setDarkMode, showSun, showMoon }) => {
         }
     }
 
-    // useEffect(() => {
-    //     const localStoLastSavedDateforAH = localStorage.getItem('lastSavedDateforAllHistory')// 0-0-0
-
-    //     if(localStoLastSavedDateforAH){
-    //         setLastSavedDateforAllHistory(localStoLastSavedDateforAH)
-    //     }
-    // }, [])
-
-
     return (
         <>
             <nav className="bg-blue-200 border-gray-200 dark:bg-gray-900">

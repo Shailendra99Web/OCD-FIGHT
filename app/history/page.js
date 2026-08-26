@@ -66,29 +66,6 @@ const History = () => {
                 </tbody>
             </table>
 
-
-            {/* <tr>
-            <td className='border border-slate-600 p-2'>01</td>
-            <td className='border border-slate-600 p-2'>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-            <td className='border border-slate-600 p-2'>Malcolm Lockyer</td>
-            <td className='border border-slate-600 p-2'>1961</td>
-        </tr> */}
-
-            {/* {allPreviousCount && allPreviousCount.map((ocd, index) => {
-            return <div key={index} className='flex justify-evenly gap-6'>
-            <p>{index + 1}</p>
-            <p>Time: {ocd.time}</p>
-            <p className='flex flex-col md:flex-row items-center'>
-                Com<span className='hidden'>pulsions </span>:
-                <span className='block'>{ocd.preCompulsions}</span>
-            </p>
-            <p className='flex flex-col md:flex-row items-center'>
-                Rum<span className='hidden'>inations </span>:
-                <span className='block'>{`${ocd.preRuminations1} : ${ocd.preRuminations2}`}</span>
-            </p>
-            </div>
-        })} */}
-
         </div>
     )
 }
