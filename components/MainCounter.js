@@ -449,7 +449,7 @@ const MainCounter = () => {
 
 
   useEffect(() => {
-    console.log('totalCount : ' , totalCount)
+    console.log('totalCount : ', totalCount)
   }, [totalCount])
 
   // To handle input and update 'ocdCount' & 'saveBtn'.
@@ -481,29 +481,39 @@ const MainCounter = () => {
   // };
 
   const handleCompulsionChange = (e) => {
-    const value = Math.round(e.target.value);
-    console.log('...from handling compulsions', value)
-    setOcdCount({ ...ocdCount, [e.target.name]: value })
-    setSaveBtn(false)
+    console.log('...from handling compulsions', e.target.value)
+    if(e.target.value>=0){
+      const value = e.target.value !=''? Math.round(e.target.value) : e.target.value
+      console.log(value)
+      setOcdCount({ ...ocdCount, [e.target.name]: value })
+      setSaveBtn(false)
+    }else{
+      toast.error('Please enter the correct value!')
+    }
   };
 
   const handleRumination1Change = (e) => {
-    const trimmedValue = e.target.value ? parseInt(e.target.value, 10) : 0;
-    console.log(trimmedValue)
-    if (trimmedValue <= 24) {
+    console.log('rumination1', e.target.value)
+    if (e.target.value >= 0 && e.target.value <= 24) {
+      const trimmedValue = e.target.value != '' ? parseInt(e.target.value, 10) : e.target.value
       console.log(trimmedValue)
       setOcdCount({ ...ocdCount, [e.target.name]: trimmedValue })
+      setSaveBtn(false)
+    } else {
+      toast.error('Please enter a value between 0 and 24!')
     }
-    setSaveBtn(false)
   };
 
   const handleRumination2Change = (e) => {
-    const trimmedValue = e.target.value ? parseInt(e.target.value, 10) : 0;
-    if (trimmedValue <= 59) {
+    console.log('rumination2', e.target.value)
+    if (e.target.value >= 0 && e.target.value <= 59) {
+      const trimmedValue = e.target.value != '' ? parseInt(e.target.value, 10) : e.target.value
       console.log(trimmedValue)
       setOcdCount({ ...ocdCount, [e.target.name]: trimmedValue })
+      setSaveBtn(false)
+    } else {
+      toast.error('Please enter a value between 0 and 59!')
     }
-    setSaveBtn(false)
   };
 
   // To only handle compulsions input and update 'ocdCount.compulsions' & 'saveBtn'.
@@ -539,7 +549,7 @@ const MainCounter = () => {
               <Link href={`/history`} className='py-2 px-4 inline-block bg-red-500 hover:bg-red-400 text-slate-50' onClick={() => { dispatch(replaceLoaderValue(40)) }}>History</Link>
             </div>
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
-              <input name="compulsions" id="compulsions" className="p-2 m-1 w-16 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleCompulsionChange} value={ocdCount.compulsions} placeholder='Compution Count' />
+              <input name="compulsions" id="compulsions" className="p-2 m-1 w-16 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleCompulsionChange} value={ocdCount.compulsions} placeholder='Compution Count' min='00' />
             </div>
             <div className=''>
               <button className='my-1 mx-1 py-3 px-4 hover:bg-blue-500 border-2 border-blue-500 rounded-full hover:text-slate-50' onClick={() => { handleCompulsionsClick(1) }}>01</button>
@@ -556,7 +566,7 @@ const MainCounter = () => {
             <div className='justify-self-center sm:order-1 sm:col-span-3'>
               <input name="ruminations1" id="ruminations1" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleRumination1Change} value={ocdCount.ruminations1} placeholder='00' min="00" max="24" />
               <span> : </span>
-              <input name="ruminations2" id="ruminations2" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleRumination2Change} value={ocdCount.ruminations2} placeholder='00' min="00" max="59" />
+              <input name="ruminations2" id="ruminations2" className="p-2 m-1 w-14 dark:text-gray-700 border-2 border-blue-500 rounded" type="number" onChange={handleRumination2Change} value={ocdCount.ruminations2} placeholder={ocdCount.ruminations2} min="00" max="59" />
             </div>
             <div className=''>
               <button className='my-1 mx-1 py-3 px-4 hover:bg-blue-500 border-2 border-blue-500 rounded-full hover:text-slate-50' onClick={() => { handleRuminationsClick(1) }}>01</button>

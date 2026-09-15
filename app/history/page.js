@@ -11,7 +11,7 @@ const History = () => {
     const [allPreviousCount, setAllPreviousCount] = useState(null)
 
     // To hold all total count.
-    const [totalCount, setTotalCount] = useState({ compulsions: 0, ruminations1: 0, ruminations2: 0 })
+    const [totalCount, setTotalCount] = useState({ totalCom: 0, totalRum1: 0, totalRum2: 0 })
 
     const [todayDate, setTodayDate] = useState('N/A')
 
@@ -81,8 +81,8 @@ const History = () => {
                     {allPreviousCount && allPreviousCount.length > 0 ? <tr>
                         <td className='border border-slate-300 dark:border-slate-600 p-2 text-green-500 text-center' colSpan={2}>Total</td>
                         {/* <td className='border border-slate-300 dark:border-slate-600 p-2 text-orange-500 text-center'>00</td> */}
-                        <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{totalCount.compulsions.toString().padStart(2, '0')}</td>
-                        <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{totalCount.ruminations1.toString().padStart(2, '0')} : {totalCount.ruminations2.toString().padStart(2, '0')}</td>
+                        <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{totalCount.totalCom.toString().padStart(2, '0')}</td>
+                        <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{totalCount.totalRum1.toString().padStart(2, '0')} : {totalCount.totalRum2.toString().padStart(2, '0')}</td>
                     </tr>:""}
                 </tbody>
             </table>
