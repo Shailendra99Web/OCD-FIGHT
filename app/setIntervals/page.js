@@ -184,12 +184,10 @@ const SetIntervals = () => {
       dispatch(replace({ holdIntervals, saveToLS: true }))
       localStorage.removeItem('previousCount');
       localStorage.removeItem('allPreviousCount');
-      // localStorage.removeItem('lastSavedDate');
       console.log('Removed the allPreviousCount & lastSavedDate from localStorage');
       alert('Soft Reset Successful!')
       toast.success('Intervals Saved Successful!');
-      // window.location.href = '/'; // Navigate and reload
-
+      window.location.href = '/'; // Navigate and reload
     }
   }
 
@@ -257,7 +255,7 @@ const SetIntervals = () => {
                       The first Interval or the starting point of Intervals (00:00) is not editable as time Interval function need the starting point (00:00) to work through with others.
                     </p>
                     <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                      Please set your all Intervals and also set this Interval (00:00-____) as an extra, if it isn&apos;t included in your Intervals.
+                      Please set your all Intervals and also set this Interval (00:00-____) as an extra, even if it isn&apos;t included in your Intervals.
                     </p>
                   </div>
                   {/* <!-- Modal footer --> */}

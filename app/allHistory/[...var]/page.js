@@ -5,11 +5,14 @@ import React, { useEffect, useState } from 'react'
 
 const AllHistory = ({ params }) => {
 
-    // To hold all previous counts
+    // To hold all previous counts.
     const [monthHistory, setMonthHistory] = useState([])
+
+    // To hold lastSaveDate excluding today's.
     const [month, setMonth] = useState(Number(params.var[0].split('-')[0]))
     const [year, setYear] = useState(Number(params.var[0].split('-')[1]))
 
+    // Default Intervals for Reset.
     const [intervals, setIntervals] = useState([
         { start: "00:00", end: "07:00" },
         { start: "07:00", end: "09:00" },
@@ -19,50 +22,44 @@ const AllHistory = ({ params }) => {
         { start: "19:00", end: "00:00" }
     ])
 
-    useEffect(() => {
-        // intervalsUpdate
-        const previouslyUpdatedIntervals = JSON.parse(localStorage.getItem('updatedIntervals'))
-        console.log(previouslyUpdatedIntervals)
-    }, [])
+    // To hold all history Years.
+    const [objectStores, setObjectStores] = useState([])
+    
+    // To set width of sidebar(Drawer) 
+    const [showDrawer, setShowDrawer] = useState('w-0')
 
-    // Loading History and, all Years for DrawerChildren
-    const loadingHistory = () => {
-        console.log('loading history')
+    // For toggle sidebar(Drawer)
+    const toggleDrawer = () => {
+        console.log('toggling Drawer display pro.');
+        (showDrawer == 'w-0') ? setShowDrawer('w-full md:w-1/3') : setShowDrawer('w-0')
+    }
+
+    // Retriving last saved History and, all saved history Years.
+    const retrivingHistory = () => {
         const dbVer = JSON.parse(localStorage.getItem('dbVer'))
-        console.log(dbVer)
-        console.log(params)
-        console.log(month, year)
 
         if (typeof window !== 'undefined') {
-            console.log('form getting history');
             const request = indexedDB.open('OCDAppDB', dbVer ? dbVer : 1);
 
             request.onsuccess = function (event) {
-                console.log('request.onsuccess');
                 const db = event.target.result;
 
-                //Taking all ObjectStore
+                //Taking all ObjectStore(Years)
                 const storeNames = Array.from(db.objectStoreNames);
-                console.log("Object Stores:", storeNames);
                 setObjectStores(storeNames)
 
                 const objStore = 'Y' + year
-                console.log('year is ', objStore)
 
                 if (db.objectStoreNames.contains(objStore)) {
-                    console.log('onsuccess from first indexedDb function')
                     const transaction = db.transaction([objStore], 'readonly');
                     const objectStore = transaction.objectStore(objStore);
 
                     const getRequest = objectStore.get('Month' + month);
-
                     const getRequestInt = objectStore.get('Month' + month + 'Int');
 
                     getRequest.onsuccess = function () {
                         if (getRequest.result) {
-                            console.log('getRequest result')
                             const storedData = JSON.parse(getRequest.result.value);
-                            console.log('Retrieved from IndexedDB:', storedData);
                             setMonthHistory(storedData)
                         } else {
                             console.log('Failed to Retrive IndexedDB data of' + month)
@@ -71,9 +68,7 @@ const AllHistory = ({ params }) => {
 
                     getRequestInt.onsuccess = function () {
                         if (getRequestInt.result) {
-                            console.log('getRequestInt result')
                             const storedIntData = JSON.parse(getRequestInt.result.value);
-                            console.log('Retrieved from IndexedDB:', storedIntData);
                             setIntervals(storedIntData)
                         } else {
                             console.log('Failed to Retrive IndexedDB Int data of' + month)
@@ -89,36 +84,27 @@ const AllHistory = ({ params }) => {
                     }
                 } else {
                     console.log(`Failed, ${objStore} is not contain in IndexedDB data`);
-
                 }
-
             }
 
             request.onerror = (event) => {
-                console.log('failed to open IndexedDB');
                 console.error('Error opening IndexedDB:', event.target.error);
-
             }
         }
     }
 
     useEffect(() => {
-        loadingHistory()
+        retrivingHistory()
     }, [])
 
-    useEffect(() => {
-        if (monthHistory) {
-            console.log(monthHistory)
-            console.log(monthHistory.map((day) => { return day }))
-        }
-    }, [monthHistory])
-
+    // To format time in two digits.
     const formatTime = (hours, minutes) => {
         const formattedHours = hours.toString().padStart(2, '0');
         const formattedMinutes = minutes.toString().padStart(2, '0');
         return `${formattedHours}:${formattedMinutes}`;
     }
 
+    // To get month name based on month number.
     const getMonthName = (monthNumber) => {
         console.log(monthNumber)
         // Array of month names
@@ -135,30 +121,16 @@ const AllHistory = ({ params }) => {
         return monthNames[monthNumber - 1] + ',';
     }
 
-    const [objectStores, setObjectStores] = useState([])
-    const [showDrawer, setShowDrawer] = useState('w-0')
-
-    const toggleDrawer = () => {
-        console.log('toggling Drawer display pro.');
-        (showDrawer == 'w-0') ? setShowDrawer('w-full md:w-1/3') : setShowDrawer('w-0')
-    }
-
+    // To clean rendered history on delete.
     const cleanOpenedHistory = (delYear, delMonth) => {
-        console.log('Triggered cleanOpenedHistory')
-
-        console.log('opened', month + '-' + year)
-        console.log('del', delMonth + '-' + delYear)
         if (delYear == year && delMonth == month) {
             console.log('Match found in cleanOpenedHistory')
             setMonthHistory([])
         }
     }
 
+    // To clean rendered history on delete.
     const cleanOpenedHistoryYear = (delYear) => {
-        console.log('Triggered cleanOpenedHistory')
-
-        console.log('opened', year)
-        console.log('del', delYear)
         if (delYear == year) {
             console.log('Match found in cleanOpenedHistoryYear')
             setMonthHistory([])
@@ -170,7 +142,7 @@ const AllHistory = ({ params }) => {
     return (
         <div className='m-3 min-h-[80vh]'>
 
-            {/* <!-- drawer component --> */}
+            {/* Drawer component */}
             <div className={`overflow-hidden ${showDrawer} fixed top-0 left-0 bottom-0 bg-gray-800/95 transition-all`}>
                 <span className='m-3 px-2 absolute top-0 right-0 text-2xl rounded-md cursor-pointer hover:bg-gray-600' onClick={toggleDrawer}>&times;</span>
                 <div className="sidebar p-3">
@@ -214,11 +186,10 @@ const AllHistory = ({ params }) => {
 
                     <tbody className='bg-slate-100 dark:bg-transparent whitespace-nowrap'>
 
-                        {/* New Data */}
+                        {/* To render last saved history(excluding today's) */}
                         {monthHistory && monthHistory.length > 0 ? monthHistory.map((day, index) => {
-                            console.log(day)
                             const dayKey = Object.keys(day)[0]; // Get the key, e.g., "D25"
-                            const dayData = day[dayKey];        // Get the array associated with the key
+                            const dayData = day[dayKey];        // Get the data associated with the key
                             let totalCompulsions = 0;
                             let totalRuminations1 = 0
                             let totalRuminations2 = 0
@@ -227,8 +198,6 @@ const AllHistory = ({ params }) => {
                                 <tr>
                                     <td rowSpan='2' className='border border-gray-300 dark:border-slate-600 p-2 dark:text-slate-300 text-slate-500 text-center'>{dayKey.slice(1).toString().padStart(2, '0')} Oct</td>
                                     {dayData.map((count, index) => {
-                                        console.log(totalCompulsions)
-                                        console.log(count)
                                         totalCompulsions = totalCompulsions + Number(count.totalCom)
                                     })}
                                     <td className='border border-gray-300 dark:border-slate-600 p-2 text-blue-500'>COM: {totalCompulsions}</td>
@@ -241,9 +210,6 @@ const AllHistory = ({ params }) => {
                                 </tr>
                                 <tr>
                                     {dayData.map((count, index) => {
-                                        console.log(totalRuminations1)
-                                        console.log(totalRuminations2)
-                                        console.log(count)
                                         totalRuminations1 = totalRuminations1 + Number(count.totalRem1)
                                         totalRuminations2 = totalRuminations2 + Number(count.totalRem2)
                                     })}

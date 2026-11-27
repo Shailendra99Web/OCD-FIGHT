@@ -1,3 +1,5 @@
+import { toast } from "react-toastify"
+
 const removeObjectStore = (storeName) => {
 
     console.log('deleting key')
@@ -16,6 +18,7 @@ const removeObjectStore = (storeName) => {
         if (db.objectStoreNames.contains(storeName)) {
             db.deleteObjectStore(storeName);
             console.log(`Object store "${storeName}" has been removed.`);
+            toast.success(`The history of ${storeName.slice(1)} has been removed`);
         } else {
             console.warn(`Object store "${storeName}" does not exist in the database.`);
         }
@@ -56,16 +59,29 @@ const removeObjKey = (objStoName, mon) => {
         const objectStore = transaction.objectStore(objStoName);
 
         // Delete the key
-        const deleteRequest = objectStore.delete(mon);
+        const getRequest = objectStore.get(mon);
         const intDeleteRequest = objectStore.delete(mon + 'Int');
 
-        deleteRequest.onsuccess = () => {
-            console.log('Key successfully deleted.');
-            // loadingHistory()
+        getRequest.onsuccess = () => {
+            if (getRequest.result) {
+
+                const deleteRequest = objectStore.delete(mon);
+
+                deleteRequest.onsuccess = () => {
+                    console.log('Key successfully deleted.');
+                    toast.success(`The history of month ${mon.slice(5)} has been removed`)
+                }
+                deleteRequest.onerror = () => {
+                    console.error('Error deleting key:', event.target.error);
+                    toast.warn(`Error while deleting history of month ${mon.slice(5)}`)
+                }
+            }
+
         };
 
-        deleteRequest.onerror = (event) => {
+        getRequest.onerror = (event) => {
             console.error('Error deleting key:', event.target.error);
+            toast.warn(`Error while deleting history of month ${mon.slice(5)}`)
         };
 
         intDeleteRequest.onsuccess = () => {
@@ -83,4 +99,4 @@ const removeObjKey = (objStoName, mon) => {
 
 }
 
-export {removeObjectStore, removeObjKey}
+export { removeObjectStore, removeObjKey }

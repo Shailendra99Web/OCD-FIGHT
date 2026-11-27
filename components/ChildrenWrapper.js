@@ -4,8 +4,9 @@ import { useAppDispatch } from '@/redux/hooks'
 import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import { ToastContainer } from 'react-toastify'
 
-const IntervalWrapper = ({ children }) => {
+const ChildrenWrapper = ({ children }) => {
     const [isInitialized, setIsInitialized] = useState(false); // To render other components or not
     const dispatch = useAppDispatch()
     const [savetoLS, setSavetoLS] = useState(false)
@@ -75,7 +76,18 @@ const IntervalWrapper = ({ children }) => {
         <Navbar setDarkMode={toggleDarkMode} showSun={showSun} showMoon={showMoon} />
         {children}
         <Footer />
+        <ToastContainer position="bottom-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme= {darkMode == 'dark'? 'dark':'light'}
+        />
     </div>
 }
 
-export default IntervalWrapper
+export default ChildrenWrapper

@@ -3,6 +3,7 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react'
+import { toast } from 'react-toastify';
 
 const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistoryYear }) => {
 
@@ -61,56 +62,6 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistor
         cleanOpenedHistory(delYear, delMonth)
     }
 
-    // const removeObjKey = (objStoName, mon) => {
-    //     console.log('deleting key')
-
-    //     const delYear = objStoName.slice(1) //Y2024
-    //     const delMonth = mon.slice(5) //Month1
-    //     cleanOpenedHistory(delYear, delMonth)
-
-    //     const dbVer = JSON.parse(localStorage.getItem('dbVer'))
-    //     console.log(dbVer)
-    //     console.log(objStoName)
-    //     console.log(mon)
-
-    //     const request = indexedDB.open('OCDAppDB', dbVer+1);
-
-    //     request.onsuccess = (event) => {
-    //         localStorage.setItem('dbVer', JSON.stringify(dbVer+1))
-    //         const db = event.target.result;
-
-    //         // Start a transaction
-    //         const transaction = db.transaction(objStoName, 'readwrite');
-    //         const objectStore = transaction.objectStore(objStoName);
-
-    //         // Delete the key
-    //         const deleteRequest = objectStore.delete(mon);
-    //         const intDeleteRequest = objectStore.delete(mon+'Int');
-
-    //         deleteRequest.onsuccess = () => {
-    //             console.log('Key successfully deleted.');
-    //             // loadingHistory()
-    //         };
-
-    //         deleteRequest.onerror = (event) => {
-    //             console.error('Error deleting key:', event.target.error);
-    //         };
-
-    //         intDeleteRequest.onsuccess = () => {
-    //             console.log('Interval Key successfully deleted.');
-    //         };
-
-    //         intDeleteRequest.onerror = (event) => {
-    //             console.error('Error deleting Interval key:', event.target.error);
-    //         };
-    //     };
-
-    //     request.onerror = (event) => {
-    //         console.error('Error opening database:', event.target.error);
-    //     };
-
-    // }
-
     useEffect(() => {
         retriveAllMonths()
     }, [])
@@ -119,7 +70,7 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistor
         <li className='border-b-2 p-2 hover:bg-gray-600'>
             <div className='flex justify-between'>
                 <Link href={'#'} className=''>{objectStoreName}</Link>
-                <button className='' onClick={(e) => { console.log(e.currentTarget.parentNode.parentNode); e.currentTarget.parentNode.parentNode.remove(); cleanOpenedHistoryYear(objectStoreName.slice(1)); removeObjectStore(objectStoreName) }}>
+                <button className='' onClick={(e) => { console.log(e.currentTarget.parentNode.parentNode); e.currentTarget.parentNode.parentNode.remove(); cleanOpenedHistoryYear(objectStoreName.slice(1)); removeObjectStore(objectStoreName); }}>
                     <FontAwesomeIcon icon={faTrash} />
                 </button>
             </div>
@@ -137,7 +88,6 @@ const DrawerChildren = ({ objectStoreName, cleanOpenedHistory, cleanOpenedHistor
                     } else {
                         console.log(month)
                     }
-
                 })}
             </ul>
         </li>

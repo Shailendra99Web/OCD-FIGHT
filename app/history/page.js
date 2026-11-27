@@ -8,6 +8,7 @@ const History = () => {
 
     const [todayDate, setTodayDate]=useState('N/A')
 
+    // To convert month number to month name.
     const getMonthName = (monthNumber) => {
         console.log(monthNumber)
         // Array of month names
@@ -20,17 +21,16 @@ const History = () => {
         return monthNames[monthNumber];
     }
 
-    // To load all previous counts from local Storage.
+    // To load all previous counts from local Storage and
+    // To update todayDate with today's date
     useEffect(() => {
         let localStorageAllPreCountData = JSON.parse(localStorage.getItem('allPreviousCount'))
         if (localStorageAllPreCountData) {
             setAllPreviousCount(localStorageAllPreCountData)
         }
         const date = String(new Date().getDate())
-        const day = String(new Date().getDay())
         const month = getMonthName(new Date().getMonth())
         const year = String(new Date().getFullYear())
-        console.log(date +' '+ month +', '+ year)
         setTodayDate(date +' '+ month +', '+ year)
     }, [])
 
@@ -53,10 +53,10 @@ const History = () => {
                 <tbody className='bg-slate-100 dark:bg-transparent'>
                     {allPreviousCount && allPreviousCount.length > 0 ? allPreviousCount.map((ocd, index) => (
                         <tr key={index}>
-                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-green-500'>{index + 1}</td>
-                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-orange-500'>{ocd.start} - {ocd.end}</td>
-                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500'>{ocd.totalCom}</td>
-                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500'>{ocd.totalRem1} : {ocd.totalRem2}</td>
+                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-green-500 text-center'>{index + 1}</td>
+                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-orange-500 text-center'>{ocd.start} - {ocd.end}</td>
+                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{ocd.totalCom.toString().padStart(2, '0')}</td>
+                            <td className='border border-slate-300 dark:border-slate-600 p-2 text-blue-500 text-center'>{ocd.totalRem1.toString().padStart(2, '0')} : {ocd.totalRem2.toString().padStart(2, '0')}</td>
                         </tr>
                     )) :
                         <tr>
